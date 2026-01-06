@@ -69,7 +69,6 @@
     <module>scim-server-examples/scim-server-jersey</module>
     <module>scim-server-examples/scim-server-quarkus</module>
     <module>scim-server-examples/scim-server-spring-boot</module>
-    <module>scim-server-examples/scim-server-spring-boot-4</module>
     <module>support/spring-boot</module>
     <module>scim-tools</module>
     <module>scim-compliance-tests</module>
@@ -732,6 +731,11 @@
             <groupId>org.jacoco</groupId>
             <artifactId>jacoco-maven-plugin</artifactId>
             <version>0.8.14</version>
+          </plugin>
+          <plugin>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-maven-plugin</artifactId>
+            <version>${version.spring-boot}</version>
           </plugin>
           <plugin>
             <groupId>io.smallrye</groupId>

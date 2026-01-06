@@ -25,7 +25,7 @@
   </parent>
 
   <artifactId>scim-server-spring-boot</artifactId>
-  <name>SCIMple - Server - Examples - Spring Boot 3</name>
+  <name>SCIMple - Server - Examples - Spring Boot</name>
 
   <properties>
     <module.name>org.apache.directory.scim.example.springboot</module.name>
@@ -36,7 +36,7 @@
       <dependency>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-dependencies</artifactId>
-        <version>${version.spring-boot3}</version>
+        <version>${version.spring-boot}</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -80,7 +80,6 @@
       <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
-        <version>${version.spring-boot3}</version>
       </plugin>
     </plugins>
   </build>
