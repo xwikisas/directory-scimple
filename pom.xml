@@ -33,7 +33,7 @@
   <packaging>pom</packaging>
   <name>SCIMple</name>
   <description>XWiki temporary fork of Apache Directory SCIMple - Javax EE implementation of the SCIM version 2.0 specification (RFC7642, RFC7643 and RFC7644)</description>
-  <url>https://github.com/apache/directory-scimple</url>
+  <url>https://github.com/xwikisas/directory-scimple</url>
 
   <properties>
     <project.build.outputTimestamp>2024-01-09T22:20:58Z</project.build.outputTimestamp>
@@ -72,6 +72,37 @@
     <!-- default surefire/failsafe arg lines to empty-->
     <jacoco.argline />
     <jacoco.it.argline />
+
+    <!-- - - Taken from xwikisas parent pom - - -->
+
+    <!-- Disable Nexus plugin -->
+    <xwiki.nexus.serverId>xwiki-staging</xwiki.nexus.serverId>
+    <xwiki.nexus.nexusUrl>http://nexus.xwiki.org/nexus/</xwiki.nexus.nexusUrl>
+    <!-- Enabled back Nexus statging disabled in xwiki-platform -->
+    <xwiki.nexus.skipLocalStaging>false</xwiki.nexus.skipLocalStaging>
+    <xwiki.nexus.autoReleaseAfterClose>false</xwiki.nexus.autoReleaseAfterClose>
+    <xwiki.nexus.keepStagingRepositoryOnCloseRuleFailure>true</xwiki.nexus.keepStagingRepositoryOnCloseRuleFailure>
+    <xwiki.nexus.skipStaging>true</xwiki.nexus.skipStaging>
+    <xwikisas.public.store.releases.id>public-store-releases</xwikisas.public.store.releases.id>
+    <xwikisas.public.store.releases.name>XWiki SAS Public Store Repository for Releases</xwikisas.public.store.releases.name>
+    <xwikisas.public.store.releases.url>https://nexus.xwiki.com/nexus/content/repositories/public-store-releases/</xwikisas.public.store.releases.url>
+    <xwikisas.public.store.snapshots.id>public-store-snapshots</xwikisas.public.store.snapshots.id>
+    <xwikisas.public.store.snapshots.name>XWiki SAS Public Store Repository for Snapshots</xwikisas.public.store.snapshots.name>
+    <xwikisas.public.store.snapshots.url>https://nexus.xwiki.com/nexus/content/repositories/public-store-snapshots/</xwikisas.public.store.snapshots.url>
+
+    <!-- Disable auto release on Jira -->
+    <xwiki.release.jira.skip>true</xwiki.release.jira.skip>
+
+    <!-- Make it easy to configure XWiki SAS Jira -->
+    <xwiki.release.jira.settingsKey>jira.xwikisas.com</xwiki.release.jira.settingsKey>
+    <xwiki.issueManagement.url>https://${xwiki.release.jira.settingsKey}/browse/${xwiki.issueManagement.jira.id}</xwiki.issueManagement.url>
+
+    <!-- Make sure we don't inherit any project names, like when using a wrong inherited profile -->
+    <xwiki.issueManagement.jira.id />
+
+    <!-- Managed Dependencies plugin version -->
+    <managedDependencies.version>1.0</managedDependencies.version>
+
   </properties>
 
   <modules>
@@ -94,9 +125,9 @@
   <scm child.scm.connection.inherit.append.path="false"
        child.scm.developerConnection.inherit.append.path="false"
        child.scm.url.inherit.append.path="false">
-  <connection>scm:git:https://github.com/apache/directory-scimple.git</connection>
-    <developerConnection>scm:git:ssh://git@github.com/apache/directory-scimple.git</developerConnection>
-    <url>https://github.com/apache/directory-scimple</url>
+  <connection>scm:git:https://github.com/xwikisas/directory-scimple.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com/xwikisas/directory-scimple.git</developerConnection>
+    <url>https://github.com/xwikisas/directory-scimple</url>
     <tag>HEAD</tag>
   </scm>
 
@@ -109,7 +140,7 @@
 
   <ciManagement>
     <system>GitHub Actions</system>
-    <url>https://github.com/apache/directory-scimple/actions</url>
+    <url>https://github.com/xwikisas/directory-scimple/actions</url>
   </ciManagement>
 
   <mailingLists combine.self="override">
@@ -175,6 +206,12 @@
       <email>bdemers@apache.org</email>
       <url>https://blog.bdemers.io/</url>
       <timezone>-0500</timezone>
+    </developer>
+
+    <developer>
+      <id>xwikisas</id>
+      <name>XWiki SAS</name>
+      <url>http://xwiki.com</url>
     </developer>
   </developers>
 
@@ -382,8 +419,8 @@
         <version>1.7.0</version>
         <extensions>true</extensions>
         <configuration>
-          <serverId>apache.releases.https</serverId>
-          <nexusUrl>https://repository.apache.org/</nexusUrl>
+          <serverId>${xwiki.nexus.serverId}</serverId>
+          <nexusUrl>${xwiki.nexus.nexusUrl}</nexusUrl>
         </configuration>
       </plugin>
       <plugin>
@@ -636,7 +673,7 @@
             </flowInitContext>
           </configuration>
         </plugin>
-        <plugin>
+        <!-- <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-javadoc-plugin</artifactId>
           <version>3.12.0</version>
@@ -651,7 +688,7 @@
           <configuration>
             <doclint>none</doclint>
           </configuration>
-        </plugin>
+        </plugin>-->
         <plugin>
           <groupId>org.apache.rat</groupId>
           <artifactId>apache-rat-plugin</artifactId>
@@ -825,7 +862,7 @@
     </pluginManagement>
   </build>
 
-  <reporting>
+  <!--<reporting>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -839,7 +876,7 @@
         </reportSets>
       </plugin>
     </plugins>
-  </reporting>
+  </reporting>-->
 
   <profiles>
     <profile>
@@ -969,20 +1006,33 @@
     </profile>
     <profile>
       <id>apache-release</id>
+      <activation>
+        <property>
+          <name>performRelease</name>
+          <value>true</value>
+        </property>
+      </activation>
       <build>
         <plugins>
+          <!-- we disable attach-sources, it makes release:perform fail -->
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-source-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>attach-sources</id>
+                <phase/>
+              </execution>
+            </executions>
+          </plugin>
+          <!-- We disable the javadoc plugin, it makes release:perform fail (it fails on many things) -->
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-javadoc-plugin</artifactId>
             <executions>
               <execution>
-                <id>aggregate</id>
-                <goals>
-                  <goal>aggregate</goal>
-                </goals>
-                <configuration>
-                  <excludePackageNames>org.apache.directory.scim.example.*,org.apache.directory.scim.test.*</excludePackageNames>
-                </configuration>
+                <id>attach-javadocs</id>
+                <phase/>
               </execution>
             </executions>
           </plugin>
@@ -1011,11 +1061,29 @@
               </execution>
             </executions>
           </plugin>
+          <plugin>
+            <groupId>org.sonatype.plugins</groupId>
+            <artifactId>nexus-staging-maven-plugin</artifactId>
+            <version>1.7.0</version>
+            <extensions>true</extensions>
+            <configuration>
+              <serverId>${xwiki.nexus.serverId}</serverId>
+              <nexusUrl>${xwiki.nexus.nexusUrl}</nexusUrl>
+              <autoReleaseAfterClose>${xwiki.nexus.autoReleaseAfterClose}</autoReleaseAfterClose>
+              <keepStagingRepositoryOnCloseRuleFailure>${xwiki.nexus.keepStagingRepositoryOnCloseRuleFailure}</keepStagingRepositoryOnCloseRuleFailure>
+              <skipLocalStaging>${xwiki.nexus.skipLocalStaging}</skipLocalStaging>
+              <skipStaging>${xwiki.nexus.skipStaging}</skipStaging>
+              <stagingProgressTimeoutMinutes>60</stagingProgressTimeoutMinutes>
+            </configuration>
+          </plugin>
         </plugins>
       </build>
     </profile>
-    <profile>
+    <!--<profile>
       <id>ci-templating</id>
+      <activation>
+        <activeByDefault>false</activeByDefault>
+      </activation>
       <build>
         <plugins>
           <plugin>
@@ -1033,6 +1101,76 @@
           </plugin>
         </plugins>
       </build>
-    </profile>
+    </profile>-->
   </profiles>
+
+  <!-- - - Taken from xwikisas parent pom - - -->
+
+  <organization>
+    <name>XWiki SAS</name>
+    <url>http://xwiki.com/</url>
+  </organization>
+
+  <!-- Standard Maven plugin for XWiki SAS public extensions -->
+  <distributionManagement>
+    <repository>
+      <id>${xwikisas.public.store.releases.id}</id>
+      <name>${xwikisas.public.store.releases.name}</name>
+      <url>${xwikisas.public.store.releases.url}</url>
+    </repository>
+    <snapshotRepository>
+      <id>${xwikisas.public.store.snapshots.id}</id>
+      <name>${xwikisas.public.store.snapshots.name}</name>
+      <url>${xwikisas.public.store.snapshots.url}</url>
+    </snapshotRepository>
+  </distributionManagement>
+
+  <repositories>
+    <repository>
+      <id>${xwikisas.public.store.releases.id}</id>
+      <name>${xwikisas.public.store.releases.name}</name>
+      <url>${xwikisas.public.store.releases.url}</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>${xwikisas.public.store.snapshots.id}</id>
+      <name>${xwikisas.public.store.snapshots.name}</name>
+      <url>${xwikisas.public.store.snapshots.url}</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
+  <pluginRepositories>
+    <pluginRepository>
+      <id>${xwikisas.public.store.releases.id}</id>
+      <name>${xwikisas.public.store.releases.name}</name>
+      <url>${xwikisas.public.store.releases.url}</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </pluginRepository>
+    <pluginRepository>
+      <id>${xwikisas.public.store.snapshots.id}</id>
+      <name>${xwikisas.public.store.snapshots.name}</name>
+      <url>${xwikisas.public.store.snapshots.url}</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </pluginRepository>
+  </pluginRepositories>
 </project>
