@@ -26,14 +26,14 @@
 
   <groupId>com.xwiki.directory.scimple</groupId>
   <artifactId>scimple</artifactId>
-  <version>1.0.0-rc-1</version>
+  <version>1.0.0-rc-2-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>SCIMple</name>
   <description>XWiki temporary fork of Apache Directory SCIMple - Javax EE implementation of the SCIM version 2.0 specification (RFC7642, RFC7643 and RFC7644)</description>
   <url>https://github.com/xwikisas/directory-scimple</url>
 
   <properties>
-    <project.build.outputTimestamp>2026-01-07T16:57:12Z</project.build.outputTimestamp>
+    <project.build.outputTimestamp>2026-01-07T16:59:00Z</project.build.outputTimestamp>
     <version.previous>1.0.0-M1</version.previous>
     <previous.tag>${version.previous}</previous.tag>
     <jdk.version>17</jdk.version>
@@ -123,7 +123,7 @@
   <connection>scm:git:https://github.com/xwikisas/directory-scimple.git</connection>
     <developerConnection>scm:git:ssh://git@github.com/xwikisas/directory-scimple.git</developerConnection>
     <url>https://github.com/xwikisas/directory-scimple</url>
-    <tag>1.0.0-rc-1</tag>
+    <tag>HEAD</tag>
   </scm>
 
   <licenses>
@@ -216,49 +216,49 @@
       <dependency>
         <groupId>com.xwiki.directory.scimple</groupId>
         <artifactId>scim-spec-protocol</artifactId>
-        <version>1.0.0-rc-1</version>
+        <version>1.0.0-rc-2-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>com.xwiki.directory.scimple</groupId>
         <artifactId>scim-spec-schema</artifactId>
-        <version>1.0.0-rc-1</version>
+        <version>1.0.0-rc-2-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>com.xwiki.directory.scimple</groupId>
         <artifactId>scim-core</artifactId>
-        <version>1.0.0-rc-1</version>
+        <version>1.0.0-rc-2-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>com.xwiki.directory.scimple</groupId>
         <artifactId>scim-tools</artifactId>
-        <version>1.0.0-rc-1</version>
+        <version>1.0.0-rc-2-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>com.xwiki.directory.scimple</groupId>
         <artifactId>scim-server</artifactId>
-        <version>1.0.0-rc-1</version>
+        <version>1.0.0-rc-2-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>com.xwiki.directory.scimple</groupId>
         <artifactId>scim-client</artifactId>
-        <version>1.0.0-rc-1</version>
+        <version>1.0.0-rc-2-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>com.xwiki.directory.scimple</groupId>
         <artifactId>scim-compliance-tests</artifactId>
-        <version>1.0.0-rc-1</version>
+        <version>1.0.0-rc-2-SNAPSHOT</version>
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>com.xwiki.directory.scimple</groupId>
         <artifactId>scim-test</artifactId>
-        <version>1.0.0-rc-1</version>
+        <version>1.0.0-rc-2-SNAPSHOT</version>
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>com.xwiki.directory.scimple</groupId>
         <artifactId>scim-spring-boot-starter</artifactId>
-        <version>1.0.0-rc-1</version>
+        <version>1.0.0-rc-2-SNAPSHOT</version>
       </dependency>
 
       <dependency>
