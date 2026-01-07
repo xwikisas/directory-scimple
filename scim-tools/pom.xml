@@ -21,7 +21,7 @@
   <parent>
     <groupId>com.xwiki.directory.scimple</groupId>
     <artifactId>scimple</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0-rc-1</version>
   </parent>
 
   <artifactId>scim-tools</artifactId>
