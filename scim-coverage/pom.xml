@@ -21,7 +21,7 @@
   <parent>
     <groupId>com.xwiki.directory.scimple</groupId>
     <artifactId>scimple</artifactId>
-    <version>1.0.0-rc-2-SNAPSHOT</version>
+    <version>1.0.0-rc-2</version>
   </parent>
 
   <artifactId>scim-test-coverage</artifactId>
