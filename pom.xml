@@ -391,6 +391,11 @@
         <version>2.0</version>
         <scope>test</scope>
       </dependency>
+      <dependency>
+        <groupId>jakarta.enterprise</groupId>
+        <artifactId>jakarta.enterprise.cdi-api</artifactId>
+        <version>${version.cdiapi}</version>
+      </dependency>
 
       <!-- Transitive dependencies specific versions -->
       <dependency>
