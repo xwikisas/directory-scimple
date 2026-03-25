@@ -23,6 +23,9 @@ import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.directory.scim.core.json.ObjectMapperFactory;
+import org.apache.directory.scim.spec.resources.GroupMembership;
+import org.apache.directory.scim.spec.resources.ScimGroup;
+import org.apache.directory.scim.spec.schema.Meta;
 import org.apache.directory.scim.test.stub.ExampleObjectExtension;
 import org.apache.directory.scim.test.stub.ExampleObjectExtension.ComplexObject;
 import org.apache.directory.scim.spec.extension.EnterpriseExtension;
@@ -34,18 +37,16 @@ import org.apache.directory.scim.spec.resources.Name;
 import org.apache.directory.scim.spec.resources.PhoneNumber;
 import org.apache.directory.scim.spec.resources.PhoneNumber.LocalPhoneNumberBuilder;
 import org.apache.directory.scim.spec.resources.ScimUser;
-import org.apache.directory.scim.spec.schema.Schema;
 import org.apache.directory.scim.core.schema.SchemaRegistry;
-import org.apache.directory.scim.spec.schema.Schemas;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -66,6 +67,7 @@ public class AttributeUtilTest {
   public void setup() {
     schemaRegistry = new SchemaRegistry();
     schemaRegistry.addSchema(ScimUser.class, List.of(EnterpriseExtension.class, ExampleObjectExtension.class));
+    schemaRegistry.addSchema(ScimGroup.class, List.of());
 
     attributeUtil = new AttributeUtil(schemaRegistry);
   }
@@ -228,6 +230,50 @@ public class AttributeUtilTest {
     Assertions.assertThat(extension.getDepartment()).isNotNull();
   }
 
+  @Test
+  void testGroupAttributes() throws Exception {
+    ScimGroup group = createScimGroup();
+
+    Set<AttributeReference> attributeSet = new HashSet<>();
+    attributeSet.add(new AttributeReference("displayName"));
+    attributeSet.add(new AttributeReference("meta.location"));
+    attributeSet.add(new AttributeReference(ScimGroup.SCHEMA_URI + ":externalId"));
+
+    group = attributeUtil.setAttributesForDisplay(group, attributeSet);
+
+    Assertions.assertThat(group.getId()).isNotNull();
+    Assertions.assertThat(group.getDisplayName()).isNotNull();
+    Assertions.assertThat(group.getExternalId()).isNotNull();
+    Assertions.assertThat(group.getMembers()).isNull();
+    Meta meta = group.getMeta();
+    Assertions.assertThat(meta).isNotNull();
+    Assertions.assertThat(meta.getLocation()).isNotNull();
+    Assertions.assertThat(meta.getCreated()).isNull();
+    Assertions.assertThat(meta.getLastModified()).isNull();
+  }
+
+  @Test
+  void testExcludedGroupAttributes() throws Exception {
+    ScimGroup group = createScimGroup();
+
+    Set<AttributeReference> excludedAttributeSet = new HashSet<>();
+    excludedAttributeSet.add(new AttributeReference("displayName"));
+    excludedAttributeSet.add(new AttributeReference("meta.location"));
+    excludedAttributeSet.add(new AttributeReference(ScimGroup.SCHEMA_URI + ":externalId"));
+
+    group = attributeUtil.setExcludedAttributesForDisplay(group, excludedAttributeSet);
+
+    Assertions.assertThat(group.getId()).isNotNull();
+    Assertions.assertThat(group.getDisplayName()).isNull();
+    Assertions.assertThat(group.getExternalId()).isNull();
+    Assertions.assertThat(group.getMembers()).isNotNull();
+    Meta meta = group.getMeta();
+    Assertions.assertThat(meta).isNotNull();
+    Assertions.assertThat(meta.getLocation()).isNull();
+    Assertions.assertThat(meta.getCreated()).isNotNull();
+    Assertions.assertThat(meta.getLastModified()).isNotNull();
+  }
+
   private void debugJson(Object resource) throws JsonGenerationException, JsonMappingException, IOException {
     StringWriter sw = new StringWriter();
     objectMapper.writeValue(sw, resource);
@@ -334,4 +380,30 @@ public class AttributeUtilTest {
     return user;
   }
 
+  private ScimGroup createScimGroup() {
+    ScimGroup group = new ScimGroup();
+    group.setId("g1");
+    group.setDisplayName("Group 1");
+    group.setExternalId("eg1");
+    GroupMembership member1 = new GroupMembership();
+    member1.setValue("u1");
+    member1.setDisplay("User 1");
+    member1.setType("User");
+    GroupMembership member2 = new GroupMembership();
+    member2.setValue("u2");
+    member2.setDisplay("User 2");
+    member2.setType("User");
+    GroupMembership member3 = new GroupMembership();
+    member3.setValue("g2");
+    member3.setDisplay("Group 2");
+    member3.setType("Group");
+    group.setMembers(new ArrayList<>(Arrays.asList(member1, member2, member3)));
+    Meta meta = new Meta();
+    meta.setResourceType("Group");
+    meta.setCreated(LocalDateTime.now());
+    meta.setLastModified(LocalDateTime.now());
+    meta.setLocation("https://example.com/Groups/g1");
+    group.setMeta(meta);
+    return group;
+  }
 }

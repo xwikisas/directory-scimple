@@ -19,9 +19,9 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-    <groupId>org.apache.directory.scimple</groupId>
+    <groupId>com.xwiki.directory.scimple</groupId>
     <artifactId>scimple</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0-rc-3-SNAPSHOT</version>
     <relativePath>../..</relativePath>
   </parent>
 
@@ -29,22 +29,23 @@
 	<name>SCIMple - Specification - Protocol</name>
 
   <properties>
-    <module.name>org.apache.directory.scim.protocol</module.name>
+    <module.name>com.xwiki.directory.scim.protocol</module.name>
   </properties>
 
 	<dependencies>
 		<dependency>
       <groupId>jakarta.ws.rs</groupId>
       <artifactId>jakarta.ws.rs-api</artifactId>
+      <version>${version.wsrsapi}</version>
       <scope>provided</scope>
     </dependency>
 		<dependency>
 			<groupId>io.swagger.core.v3</groupId>
 			<artifactId>swagger-annotations</artifactId>
-			<version>2.2.36</version>
+			<version>${version.swagger}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.directory.scimple</groupId>
+			<groupId>com.xwiki.directory.scimple</groupId>
 			<artifactId>scim-spec-schema</artifactId>
 		</dependency>
     <dependency>
@@ -66,7 +67,7 @@
   <build>
     <plugins>
       <plugin>
-        <groupId>io.smallrye</groupId>
+        <groupId>${mavenjandex.groupId}</groupId>
         <artifactId>jandex-maven-plugin</artifactId>
       </plugin>
     </plugins>

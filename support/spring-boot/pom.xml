@@ -19,9 +19,9 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>org.apache.directory.scimple</groupId>
+    <groupId>com.xwiki.directory.scimple</groupId>
     <artifactId>scimple</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0-rc-3-SNAPSHOT</version>
     <relativePath>../..</relativePath>
   </parent>
 
@@ -29,7 +29,7 @@
   <name>SCIMple - Support - Spring Boot Starter</name>
 
   <properties>
-    <module.name>org.apache.directory.scim.spring</module.name>
+    <module.name>com.xwiki.directory.scim.spring</module.name>
     <max.jdk.version>17</max.jdk.version>
   </properties>
 
@@ -60,6 +60,14 @@
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-validation</artifactId>
+      <!-- Logging causes NoClassDefFoundError: org/slf4j/impl/StaticLoggerBinder
+           Workaround found at https://stackoverflow.com/a/56754302 -->
+      <exclusions>
+        <exclusion>
+          <groupId>org.springframework.boot</groupId>
+          <artifactId>spring-boot-starter-logging</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
@@ -72,15 +80,16 @@
       <scope>runtime</scope>
     </dependency>
     <dependency>
-      <groupId>org.apache.directory.scimple</groupId>
+      <groupId>com.xwiki.directory.scimple</groupId>
       <artifactId>scim-server</artifactId>
     </dependency>
     <dependency>
       <groupId>jakarta.enterprise</groupId>
       <artifactId>jakarta.enterprise.cdi-api</artifactId>
+      <version>${version.cdiapi}</version>
     </dependency>
     <dependency>
-      <groupId>org.apache.directory.scimple</groupId>
+      <groupId>com.xwiki.directory.scimple</groupId>
       <artifactId>scim-compliance-tests</artifactId>
       <scope>test</scope>
     </dependency>
@@ -103,6 +112,12 @@
       <groupId>org.springframework</groupId>
       <artifactId>spring-test</artifactId>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.glassfish.jersey.containers</groupId>
+      <artifactId>jersey-container-grizzly2-http</artifactId>
+      <version>${version.grizzly2http}</version>
+      <scope>runtime</scope>
     </dependency>
   </dependencies>
 </project>

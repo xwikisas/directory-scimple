@@ -22,11 +22,11 @@ package org.apache.directory.scim.server.rest;
 import java.util.*;
 import java.util.regex.Pattern;
 
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
-import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.core.Response.Status;
-import jakarta.ws.rs.core.UriInfo;
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.UriInfo;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.directory.scim.spec.exception.ResourceException;
@@ -417,7 +417,7 @@ public class BulkResourceImpl implements BulkResource {
 
       log.debug("Creating {}", scimResource);
 
-      ScimResource newScimResource = repository.create(scimResource);
+      ScimResource newScimResource = repository.create(scimResource, Collections.emptySet(), Collections.emptySet());
       String bulkOperationPath = operationResult.getPath();
       String newResourceId = newScimResource.getId();
       String newResourceUri = uriInfo.getBaseUriBuilder()

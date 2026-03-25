@@ -19,9 +19,9 @@
 
 package org.apache.directory.scim.example.memory.service;
 
-import jakarta.annotation.PostConstruct;
-import jakarta.inject.Inject;
-import jakarta.ws.rs.core.Response;
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+import javax.ws.rs.core.Response;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.directory.scim.core.repository.ETag;
 import org.apache.directory.scim.core.repository.PatchHandler;
@@ -47,8 +47,8 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Named;
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Named;
 import org.apache.directory.scim.core.schema.SchemaRegistry;
 
 @Named
@@ -84,7 +84,7 @@ public class InMemoryGroupService implements Repository<ScimGroup> {
   }
 
   @Override
-  public ScimGroup create(ScimGroup resource) throws UnableToCreateResourceException {
+  public ScimGroup create(ScimGroup resource, Set<AttributeReference> includedAttributes, Set<AttributeReference> excludedAttributes) throws UnableToCreateResourceException {
     String id = UUID.randomUUID().toString();
 
     // if the external ID is not set, use the displayName instead
@@ -119,13 +119,13 @@ public class InMemoryGroupService implements Repository<ScimGroup> {
     if (!groups.containsKey(id)) {
       throw new ResourceNotFoundException(id);
     }
-    ScimGroup resource = patchHandler.apply(get(id), patchOperations);
+    ScimGroup resource = patchHandler.apply(get(id, includedAttributeReferences, excludedAttributeReferences), patchOperations);
     groups.put(id, resource);
     return resource;
   }
 
   @Override
-  public ScimGroup get(String id) {
+  public ScimGroup get(String id, Set<AttributeReference> includedAttributes, Set<AttributeReference> excludedAttributes) {
     return groups.get(id);
   }
 
@@ -137,7 +137,7 @@ public class InMemoryGroupService implements Repository<ScimGroup> {
   }
 
   @Override
-  public FilterResponse<ScimGroup> find(Filter filter, PageRequest pageRequest, SortRequest sortRequest) {
+  public FilterResponse<ScimGroup> find(Filter filter, PageRequest pageRequest, SortRequest sortRequest, Set<AttributeReference> includedAttributes, Set<AttributeReference> excludedAttributes) {
     long count = pageRequest.getCount() != null ? pageRequest.getCount() : groups.size();
     long startIndex = pageRequest.getStartIndex() != null
       ? pageRequest.getStartIndex() - 1 // SCIM is 1-based indexed

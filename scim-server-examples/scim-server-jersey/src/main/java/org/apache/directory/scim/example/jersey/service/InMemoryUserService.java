@@ -19,11 +19,11 @@
 
 package org.apache.directory.scim.example.jersey.service;
 
-import jakarta.annotation.PostConstruct;
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
-import jakarta.inject.Named;
-import jakarta.ws.rs.core.Response;
+import javax.annotation.PostConstruct;
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.ws.rs.core.Response;
 import org.apache.directory.scim.core.repository.ETag;
 import org.apache.directory.scim.core.repository.PatchHandler;
 import org.apache.directory.scim.core.repository.Repository;
@@ -122,10 +122,10 @@ public class InMemoryUserService implements Repository<ScimUser> {
   }
 
   /**
-   * @see Repository#create(ScimResource)
+   * @see Repository#create(ScimResource, java.util.Set, java.util.Set)
    */
   @Override
-  public ScimUser create(ScimUser resource) throws UnableToCreateResourceException {
+  public ScimUser create(ScimUser resource, Set<AttributeReference> includedAttributes, Set<AttributeReference> excludedAttributes) throws UnableToCreateResourceException {
     String id = UUID.randomUUID().toString();
 
     // check to make sure the user doesn't already exist
@@ -155,17 +155,17 @@ public class InMemoryUserService implements Repository<ScimUser> {
     if (!users.containsKey(id)) {
       throw new ResourceNotFoundException(id);
     }
-    ScimUser resource = patchHandler.apply(get(id), patchOperations);
+    ScimUser resource = patchHandler.apply(get(id, includedAttributeReferences, excludedAttributeReferences), patchOperations);
     users.put(id, resource);
     return resource;
   }
 
 
   /**
-   * @see Repository#get(java.lang.String)
+   * @see Repository#get(java.lang.String, java.util.Set, java.util.Set)
    */
   @Override
-  public ScimUser get(String id) {
+  public ScimUser get(String id, Set<AttributeReference> includedAttributes, Set<AttributeReference> excludedAttributes) {
     return users.get(id);
   }
 
@@ -180,10 +180,10 @@ public class InMemoryUserService implements Repository<ScimUser> {
   }
 
   /**
-   * @see Repository#find(Filter, PageRequest, SortRequest)
+   * @see Repository#find(Filter, PageRequest, SortRequest, java.util.Set, java.util.Set)
    */
   @Override
-  public FilterResponse<ScimUser> find(Filter filter, PageRequest pageRequest, SortRequest sortRequest) {
+  public FilterResponse<ScimUser> find(Filter filter, PageRequest pageRequest, SortRequest sortRequest, Set<AttributeReference> includedAttributes, Set<AttributeReference> excludedAttributes) {
 
     long count = pageRequest.getCount() != null ? pageRequest.getCount() : users.size();
     long startIndex = pageRequest.getStartIndex() != null

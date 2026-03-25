@@ -15,10 +15,7 @@
  specific language governing permissions and limitations
  under the License. -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
-         child.project.url.inherit.append.path="false">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" child.project.url.inherit.append.path="false">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
@@ -27,35 +24,82 @@
     <version>50</version>
   </parent>
 
-  <groupId>org.apache.directory.scimple</groupId>
+  <groupId>com.xwiki.directory.scimple</groupId>
   <artifactId>scimple</artifactId>
-  <version>1.0.0-SNAPSHOT</version>
+  <version>1.0.0-rc-3-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>SCIMple</name>
-  <description>Apache Directory SCIMple - Jakarta EE implementation of the SCIM version 2.0 specification (RFC7642, RFC7643 and RFC7644)</description>
-  <url>https://github.com/apache/directory-scimple</url>
+  <description>XWiki temporary fork of Apache Directory SCIMple - Javax EE implementation of the SCIM version 2.0 specification (RFC7642, RFC7643 and RFC7644)</description>
+  <url>https://github.com/xwikisas/directory-scimple</url>
 
   <properties>
-    <project.build.outputTimestamp>2024-01-09T22:20:58Z</project.build.outputTimestamp>
+    <project.build.outputTimestamp>2026-03-25T08:51:25Z</project.build.outputTimestamp>
     <version.previous>1.0.0-M1</version.previous>
     <previous.tag>${version.previous}</previous.tag>
-    <jdk.version>11</jdk.version>
+    <jdk.version>17</jdk.version>
     <max.jdk.version>${jdk.version}</max.jdk.version>
     <maven.compiler.source>${jdk.version}</maven.compiler.source>
     <maven.compiler.target>${jdk.version}</maven.compiler.target>
     <maven.compiler.release>${jdk.version}</maven.compiler.release>
     <gpg.bestPractices>true</gpg.bestPractices>
-    <version.jackson>2.19.2</version.jackson>
-    <version.logback>1.5.18</version.logback>
+    <version.jackson>2.20.0</version.jackson>
+    <version.logback>1.5.22</version.logback>
     <version.restfuse>1.2.0</version.restfuse>
-    <version.slf4j>2.0.16</version.slf4j>
+    <version.slf4j>2.0.17</version.slf4j>
     <version.antlr4>4.13.2</version.antlr4>
     <version.resteasy>6.2.12.Final</version.resteasy>
-    <version.spring-boot>3.5.4</version.spring-boot>
+    <version.spring-boot>2.7.18</version.spring-boot>
+    <jandex.groupId>org.jboss</jandex.groupId>
+    <mavenjandex.groupId>org.jboss.jandex</mavenjandex.groupId>
+    <version.mavenjandex>1.2.3</version.mavenjandex>
+    <version.jandex>3.0.1</version.jandex><!-- higher versions cause WARN: Version of Jandex index is not supported -->
+    <version.restassured>5.5.6</version.restassured>
+    <version.grizzly2http>2.35</version.grizzly2http>
+
+    <!-- Look at xwiki-commons/pom.xml to know which versions to set -->
+    <version.cdiapi>2.0.2</version.cdiapi>
+    <version.wsrsapi>2.1.6</version.wsrsapi>
+    <version.annotationapi>1.3.5</version.annotationapi>
+    <version.bindapi>2.3.3</version.bindapi>
+    <version.validationapi>2.0.1.Final</version.validationapi>
+    <version.activationapi>1.2.2</version.activationapi>
+    <version.jackson>2.19.1</version.jackson>
+    <version.swagger>2.2.17</version.swagger>
 
     <!-- default surefire/failsafe arg lines to empty-->
     <jacoco.argline />
     <jacoco.it.argline />
+
+    <!-- - - Taken from xwikisas parent pom - - -->
+
+    <!-- Disable Nexus plugin -->
+    <xwiki.nexus.serverId>xwiki-staging</xwiki.nexus.serverId>
+    <xwiki.nexus.nexusUrl>http://nexus.xwiki.org/nexus/</xwiki.nexus.nexusUrl>
+    <!-- Enabled back Nexus statging disabled in xwiki-platform -->
+    <xwiki.nexus.skipLocalStaging>false</xwiki.nexus.skipLocalStaging>
+    <xwiki.nexus.autoReleaseAfterClose>false</xwiki.nexus.autoReleaseAfterClose>
+    <xwiki.nexus.keepStagingRepositoryOnCloseRuleFailure>true</xwiki.nexus.keepStagingRepositoryOnCloseRuleFailure>
+    <xwiki.nexus.skipStaging>true</xwiki.nexus.skipStaging>
+    <xwikisas.public.store.releases.id>public-store-releases</xwikisas.public.store.releases.id>
+    <xwikisas.public.store.releases.name>XWiki SAS Public Store Repository for Releases</xwikisas.public.store.releases.name>
+    <xwikisas.public.store.releases.url>https://nexus.xwiki.com/nexus/content/repositories/public-store-releases/</xwikisas.public.store.releases.url>
+    <xwikisas.public.store.snapshots.id>public-store-snapshots</xwikisas.public.store.snapshots.id>
+    <xwikisas.public.store.snapshots.name>XWiki SAS Public Store Repository for Snapshots</xwikisas.public.store.snapshots.name>
+    <xwikisas.public.store.snapshots.url>https://nexus.xwiki.com/nexus/content/repositories/public-store-snapshots/</xwikisas.public.store.snapshots.url>
+
+    <!-- Disable auto release on Jira -->
+    <xwiki.release.jira.skip>true</xwiki.release.jira.skip>
+
+    <!-- Make it easy to configure XWiki SAS Jira -->
+    <xwiki.release.jira.settingsKey>jira.xwikisas.com</xwiki.release.jira.settingsKey>
+    <xwiki.issueManagement.url>https://${xwiki.release.jira.settingsKey}/browse/${xwiki.issueManagement.jira.id}</xwiki.issueManagement.url>
+
+    <!-- Make sure we don't inherit any project names, like when using a wrong inherited profile -->
+    <xwiki.issueManagement.jira.id />
+
+    <!-- Managed Dependencies plugin version -->
+    <managedDependencies.version>1.0</managedDependencies.version>
+
   </properties>
 
   <modules>
@@ -75,12 +119,10 @@
     <module>scim-coverage</module>
   </modules>
 
-  <scm child.scm.connection.inherit.append.path="false"
-       child.scm.developerConnection.inherit.append.path="false"
-       child.scm.url.inherit.append.path="false">
-  <connection>scm:git:https://github.com/apache/directory-scimple.git</connection>
-    <developerConnection>scm:git:ssh://git@github.com/apache/directory-scimple.git</developerConnection>
-    <url>https://github.com/apache/directory-scimple</url>
+  <scm child.scm.connection.inherit.append.path="false" child.scm.developerConnection.inherit.append.path="false" child.scm.url.inherit.append.path="false">
+  <connection>scm:git:https://github.com/xwikisas/directory-scimple.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com/xwikisas/directory-scimple.git</developerConnection>
+    <url>https://github.com/xwikisas/directory-scimple</url>
     <tag>HEAD</tag>
   </scm>
 
@@ -93,7 +135,7 @@
 
   <ciManagement>
     <system>GitHub Actions</system>
-    <url>https://github.com/apache/directory-scimple/actions</url>
+    <url>https://github.com/xwikisas/directory-scimple/actions</url>
   </ciManagement>
 
   <mailingLists combine.self="override">
@@ -160,63 +202,69 @@
       <url>https://blog.bdemers.io/</url>
       <timezone>-0500</timezone>
     </developer>
+
+    <developer>
+      <id>xwikisas</id>
+      <name>XWiki SAS</name>
+      <url>http://xwiki.com</url>
+    </developer>
   </developers>
 
   <dependencyManagement>
     <dependencies>
       <!-- Project Modules -->
       <dependency>
-        <groupId>org.apache.directory.scimple</groupId>
+        <groupId>com.xwiki.directory.scimple</groupId>
         <artifactId>scim-spec-protocol</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>1.0.0-rc-3-SNAPSHOT</version>
       </dependency>
       <dependency>
-        <groupId>org.apache.directory.scimple</groupId>
+        <groupId>com.xwiki.directory.scimple</groupId>
         <artifactId>scim-spec-schema</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>1.0.0-rc-3-SNAPSHOT</version>
       </dependency>
       <dependency>
-        <groupId>org.apache.directory.scimple</groupId>
+        <groupId>com.xwiki.directory.scimple</groupId>
         <artifactId>scim-core</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>1.0.0-rc-3-SNAPSHOT</version>
       </dependency>
       <dependency>
-        <groupId>org.apache.directory.scimple</groupId>
+        <groupId>com.xwiki.directory.scimple</groupId>
         <artifactId>scim-tools</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>1.0.0-rc-3-SNAPSHOT</version>
       </dependency>
       <dependency>
-        <groupId>org.apache.directory.scimple</groupId>
+        <groupId>com.xwiki.directory.scimple</groupId>
         <artifactId>scim-server</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>1.0.0-rc-3-SNAPSHOT</version>
       </dependency>
       <dependency>
-        <groupId>org.apache.directory.scimple</groupId>
+        <groupId>com.xwiki.directory.scimple</groupId>
         <artifactId>scim-client</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>1.0.0-rc-3-SNAPSHOT</version>
       </dependency>
       <dependency>
-        <groupId>org.apache.directory.scimple</groupId>
+        <groupId>com.xwiki.directory.scimple</groupId>
         <artifactId>scim-compliance-tests</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>1.0.0-rc-3-SNAPSHOT</version>
         <scope>test</scope>
       </dependency>
       <dependency>
-        <groupId>org.apache.directory.scimple</groupId>
+        <groupId>com.xwiki.directory.scimple</groupId>
         <artifactId>scim-test</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>1.0.0-rc-3-SNAPSHOT</version>
         <scope>test</scope>
       </dependency>
       <dependency>
-        <groupId>org.apache.directory.scimple</groupId>
+        <groupId>com.xwiki.directory.scimple</groupId>
         <artifactId>scim-spring-boot-starter</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>1.0.0-rc-3-SNAPSHOT</version>
       </dependency>
 
       <dependency>
         <groupId>org.jboss.weld.se</groupId>
         <artifactId>weld-se-core</artifactId>
-        <version>5.1.6.Final</version>
+        <version>3.1.9.Final</version>
       </dependency>
 
       <dependency>
@@ -229,7 +277,7 @@
       <dependency>
         <groupId>org.junit</groupId>
         <artifactId>junit-bom</artifactId>
-        <version>5.13.4</version>
+        <version>6.0.1</version>
         <scope>import</scope>
         <type>pom</type>
       </dependency>
@@ -244,20 +292,20 @@
         <groupId>io.rest-assured</groupId>
         <artifactId>rest-assured-bom</artifactId>
         <type>pom</type>
-        <version>5.5.5</version>
+        <version>${version.restassured}</version>
         <scope>import</scope>
       </dependency>
       <dependency>
         <groupId>org.glassfish.jersey</groupId>
         <artifactId>jersey-bom</artifactId>
-        <version>3.1.11</version>
+        <version>2.35</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
       <dependency>
         <groupId>org.hibernate.validator</groupId>
         <artifactId>hibernate-validator</artifactId>
-        <version>8.0.2.Final</version>
+        <version>6.2.5.Final</version>
       </dependency>
       <dependency>
         <groupId>org.glassfish</groupId>
@@ -281,7 +329,7 @@
       <dependency>
         <groupId>com.google.guava</groupId>
         <artifactId>guava</artifactId>
-        <version>33.4.8-android</version>
+        <version>33.5.0-android</version>
       </dependency>
       <dependency>
         <groupId>ch.qos.logback</groupId>
@@ -317,19 +365,19 @@
       <dependency>
         <groupId>org.mockito</groupId>
         <artifactId>mockito-core</artifactId>
-        <version>5.18.0</version>
+        <version>5.21.0</version>
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.mockito</groupId>
         <artifactId>mockito-junit-jupiter</artifactId>
-        <version>5.19.0</version>
+        <version>5.20.0</version>
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.assertj</groupId>
         <artifactId>assertj-core</artifactId>
-        <version>3.27.4</version>
+        <version>3.27.6</version>
         <scope>test</scope>
       </dependency>
       <dependency>
@@ -343,6 +391,11 @@
         <version>2.0</version>
         <scope>test</scope>
       </dependency>
+      <dependency>
+        <groupId>jakarta.enterprise</groupId>
+        <artifactId>jakarta.enterprise.cdi-api</artifactId>
+        <version>${version.cdiapi}</version>
+      </dependency>
 
       <!-- Transitive dependencies specific versions -->
       <dependency>
@@ -353,7 +406,7 @@
       <dependency>
         <groupId>commons-codec</groupId>
         <artifactId>commons-codec</artifactId>
-        <version>1.19.0</version>
+        <version>1.20.0</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
@@ -366,8 +419,8 @@
         <version>1.7.0</version>
         <extensions>true</extensions>
         <configuration>
-          <serverId>apache.releases.https</serverId>
-          <nexusUrl>https://repository.apache.org/</nexusUrl>
+          <serverId>${xwiki.nexus.serverId}</serverId>
+          <nexusUrl>${xwiki.nexus.nexusUrl}</nexusUrl>
         </configuration>
       </plugin>
       <plugin>
@@ -411,12 +464,12 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-enforcer-plugin</artifactId>
-        <version>3.6.1</version>
+        <version>3.6.2</version>
         <dependencies>
           <dependency>
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>extra-enforcer-rules</artifactId>
-            <version>1.10.0</version>
+            <version>1.11.0</version>
           </dependency>
         </dependencies>
         <executions>
@@ -481,7 +534,7 @@
       <plugin>
         <groupId>org.jreleaser</groupId>
         <artifactId>jreleaser-maven-plugin</artifactId>
-        <version>1.19.0</version>
+        <version>1.21.0</version>
         <inherited>false</inherited>
         <configuration>
           <dryrun>true</dryrun>
@@ -566,7 +619,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
-          <version>3.14.0</version>
+          <version>3.14.1</version>
           <configuration>
             <!-- parent pom currently defines v1.7 -->
             <source>${maven.compiler.source}</source>
@@ -603,7 +656,7 @@
         <plugin>
           <groupId>org.wildfly.plugins</groupId>
           <artifactId>wildfly-maven-plugin</artifactId>
-          <version>5.1.3.Final</version>
+          <version>5.1.5.Final</version>
           <configuration>
             <id>${jbossServerId}</id>
             <hostname>${jbossHostname}</hostname>
@@ -620,10 +673,10 @@
             </flowInitContext>
           </configuration>
         </plugin>
-        <plugin>
+        <!-- <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-javadoc-plugin</artifactId>
-          <version>3.11.3</version>
+          <version>3.12.0</version>
           <executions>
             <execution>
               <id>attach-javadocs</id>
@@ -635,12 +688,15 @@
           <configuration>
             <doclint>none</doclint>
           </configuration>
-        </plugin>
+        </plugin>-->
         <plugin>
           <groupId>org.apache.rat</groupId>
           <artifactId>apache-rat-plugin</artifactId>
-          <version>0.16.1</version>
+          <version>0.17</version>
           <configuration>
+            <inputExcludeStd>ECLIPSE</inputExcludeStd>
+            <inputExcludeStd>IDEA</inputExcludeStd>
+            <inputExcludeStd>MAC</inputExcludeStd>
             <excludes>
               <exclude>**/*.md</exclude>
               <exclude>**/*.json</exclude>
@@ -655,7 +711,7 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-surefire-plugin</artifactId>
-            <version>3.5.3</version>
+            <version>3.5.4</version>
             <configuration>
               <!-- parent pom overrides the default, so we MUST set the jacoco argline directly -->
               <argLine>@{jacoco.argline}</argLine>
@@ -677,7 +733,7 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-failsafe-plugin</artifactId>
-            <version>3.5.3</version>
+            <version>3.5.4</version>
             <configuration>
               <argLine>@{jacoco.it.argline}</argLine>
               <enablePropertiesElement>false</enablePropertiesElement>
@@ -685,7 +741,7 @@
                 <include>**/*IT.java</include>
               </includes>
               <dependenciesToScan>
-                <dependency>org.apache.directory.scimple:scim-compliance-tests</dependency>
+                <dependency>com.xwiki.directory.scimple:scim-compliance-tests</dependency>
               </dependenciesToScan>
               <properties>
                 <configurationParameters>
@@ -703,7 +759,7 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-release-plugin</artifactId>
-            <version>3.1.1</version>
+            <version>3.2.0</version>
             <configuration>
               <signTag>true</signTag>
               <autoVersionSubmodules>true</autoVersionSubmodules>
@@ -718,7 +774,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-artifact-plugin</artifactId>
-          <version>3.6.0</version>
+          <version>3.6.1</version>
           <configuration>
             <fail>true</fail>
           </configuration>
@@ -726,7 +782,7 @@
           <plugin>
             <groupId>org.jacoco</groupId>
             <artifactId>jacoco-maven-plugin</artifactId>
-            <version>0.8.13</version>
+            <version>0.8.14</version>
           </plugin>
           <plugin>
             <groupId>org.springframework.boot</groupId>
@@ -734,9 +790,9 @@
             <version>${version.spring-boot}</version>
           </plugin>
           <plugin>
-            <groupId>io.smallrye</groupId>
+            <groupId>${mavenjandex.groupId}</groupId>
             <artifactId>jandex-maven-plugin</artifactId>
-            <version>3.4.0</version>
+            <version>${version.mavenjandex}</version>
             <executions>
               <execution>
                 <id>make-index</id>
@@ -764,7 +820,7 @@
         <plugin>
           <groupId>com.github.spotbugs</groupId>
           <artifactId>spotbugs-maven-plugin</artifactId>
-          <version>4.9.3.2</version>
+          <version>4.9.8.2</version>
           <configuration>
             <plugins>
               <plugin>
@@ -785,7 +841,7 @@
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>versions-maven-plugin</artifactId>
-          <version>2.18.0</version>
+          <version>2.20.1</version>
           <configuration>
             <generateBackupPoms>false</generateBackupPoms>
             <ruleSet>
@@ -806,7 +862,7 @@
     </pluginManagement>
   </build>
 
-  <reporting>
+  <!--<reporting>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -820,7 +876,7 @@
         </reportSets>
       </plugin>
     </plugins>
-  </reporting>
+  </reporting>-->
 
   <profiles>
     <profile>
@@ -873,7 +929,7 @@
           <plugin>
             <groupId>io.fabric8</groupId>
             <artifactId>docker-maven-plugin</artifactId>
-            <version>0.46.0</version>
+            <version>0.48.0</version>
             <configuration>
               <skip>true</skip>
             </configuration>
@@ -906,7 +962,7 @@
           <plugin>
             <groupId>io.fabric8</groupId>
             <artifactId>docker-maven-plugin</artifactId>
-            <version>0.46.0</version>
+            <version>0.48.0</version>
             <configuration>
               <skip>true</skip>
             </configuration>
@@ -950,20 +1006,33 @@
     </profile>
     <profile>
       <id>apache-release</id>
+      <activation>
+        <property>
+          <name>performRelease</name>
+          <value>true</value>
+        </property>
+      </activation>
       <build>
         <plugins>
+          <!-- we disable attach-sources, it makes release:perform fail -->
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-source-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>attach-sources</id>
+                <phase />
+              </execution>
+            </executions>
+          </plugin>
+          <!-- We disable the javadoc plugin, it makes release:perform fail (it fails on many things) -->
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-javadoc-plugin</artifactId>
             <executions>
               <execution>
-                <id>aggregate</id>
-                <goals>
-                  <goal>aggregate</goal>
-                </goals>
-                <configuration>
-                  <excludePackageNames>org.apache.directory.scim.example.*,org.apache.directory.scim.test.*</excludePackageNames>
-                </configuration>
+                <id>attach-javadocs</id>
+                <phase />
               </execution>
             </executions>
           </plugin>
@@ -992,11 +1061,29 @@
               </execution>
             </executions>
           </plugin>
+          <plugin>
+            <groupId>org.sonatype.plugins</groupId>
+            <artifactId>nexus-staging-maven-plugin</artifactId>
+            <version>1.7.0</version>
+            <extensions>true</extensions>
+            <configuration>
+              <serverId>${xwiki.nexus.serverId}</serverId>
+              <nexusUrl>${xwiki.nexus.nexusUrl}</nexusUrl>
+              <autoReleaseAfterClose>${xwiki.nexus.autoReleaseAfterClose}</autoReleaseAfterClose>
+              <keepStagingRepositoryOnCloseRuleFailure>${xwiki.nexus.keepStagingRepositoryOnCloseRuleFailure}</keepStagingRepositoryOnCloseRuleFailure>
+              <skipLocalStaging>${xwiki.nexus.skipLocalStaging}</skipLocalStaging>
+              <skipStaging>${xwiki.nexus.skipStaging}</skipStaging>
+              <stagingProgressTimeoutMinutes>60</stagingProgressTimeoutMinutes>
+            </configuration>
+          </plugin>
         </plugins>
       </build>
     </profile>
-    <profile>
+    <!--<profile>
       <id>ci-templating</id>
+      <activation>
+        <activeByDefault>false</activeByDefault>
+      </activation>
       <build>
         <plugins>
           <plugin>
@@ -1014,6 +1101,76 @@
           </plugin>
         </plugins>
       </build>
-    </profile>
+    </profile>-->
   </profiles>
+
+  <!-- - - Taken from xwikisas parent pom - - -->
+
+  <organization>
+    <name>XWiki SAS</name>
+    <url>http://xwiki.com/</url>
+  </organization>
+
+  <!-- Standard Maven plugin for XWiki SAS public extensions -->
+  <distributionManagement>
+    <repository>
+      <id>${xwikisas.public.store.releases.id}</id>
+      <name>${xwikisas.public.store.releases.name}</name>
+      <url>${xwikisas.public.store.releases.url}</url>
+    </repository>
+    <snapshotRepository>
+      <id>${xwikisas.public.store.snapshots.id}</id>
+      <name>${xwikisas.public.store.snapshots.name}</name>
+      <url>${xwikisas.public.store.snapshots.url}</url>
+    </snapshotRepository>
+  </distributionManagement>
+
+  <repositories>
+    <repository>
+      <id>${xwikisas.public.store.releases.id}</id>
+      <name>${xwikisas.public.store.releases.name}</name>
+      <url>${xwikisas.public.store.releases.url}</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>${xwikisas.public.store.snapshots.id}</id>
+      <name>${xwikisas.public.store.snapshots.name}</name>
+      <url>${xwikisas.public.store.snapshots.url}</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
+  <pluginRepositories>
+    <pluginRepository>
+      <id>${xwikisas.public.store.releases.id}</id>
+      <name>${xwikisas.public.store.releases.name}</name>
+      <url>${xwikisas.public.store.releases.url}</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </pluginRepository>
+    <pluginRepository>
+      <id>${xwikisas.public.store.snapshots.id}</id>
+      <name>${xwikisas.public.store.snapshots.name}</name>
+      <url>${xwikisas.public.store.snapshots.url}</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </pluginRepository>
+  </pluginRepositories>
 </project>

@@ -21,6 +21,8 @@ package org.apache.directory.scim.tools.lint;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -38,6 +40,8 @@ public class Lint {
 
   JsonNode convert(InputStream inputStream) throws IOException {
     ObjectMapper objectMapper = new ObjectMapper();
+    objectMapper.registerModule(new Jdk8Module());
+    objectMapper.registerModule(new JavaTimeModule());
     return objectMapper.readTree(inputStream);
   }
   

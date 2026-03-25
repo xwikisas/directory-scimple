@@ -19,10 +19,10 @@
 
 package org.apache.directory.scim.server.rest;
 
-import jakarta.enterprise.inject.Instance;
-import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.core.UriBuilder;
-import jakarta.ws.rs.core.UriInfo;
+import javax.enterprise.inject.Instance;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriBuilder;
+import javax.ws.rs.core.UriInfo;
 import org.apache.directory.scim.server.exception.UnableToCreateResourceException;
 import org.apache.directory.scim.core.repository.Repository;
 import org.apache.directory.scim.core.repository.RepositoryRegistry;
@@ -89,7 +89,7 @@ public class BulkResourceImplTest {
     user.setId("alice-id");
     when(userRepositoryInstance.get()).thenReturn(userRepository);
     repositoryRegistry.registerRepository(ScimUser.class, userRepository);
-    when(userRepository.create(any())).thenReturn(user);
+    when(userRepository.create(any(), any(), any())).thenReturn(user);
 
     Instance<Repository<ScimGroup>> groupProviderInstance = mock(Instance.class);
     Repository<ScimGroup> groupRepository = mock(Repository.class);
@@ -98,7 +98,7 @@ public class BulkResourceImplTest {
     when(groupProviderInstance.get()).thenReturn(groupRepository);
     repositoryRegistry.registerRepository(ScimGroup.class, groupRepository);
     when(groupRepository.getExtensionList()).thenReturn(Collections.emptyList());
-    when(groupRepository.create(any())).thenReturn(group);
+    when(groupRepository.create(any(), any(), any())).thenReturn(group);
 
     BulkResourceImpl impl = new BulkResourceImpl(schemaRegistry, repositoryRegistry);
     UriInfo uriInfo = mock(UriInfo.class);
@@ -141,8 +141,8 @@ public class BulkResourceImplTest {
     inOrder.verify(groupRepository, atLeast(1)).getExtensionList();
 
     // User was created before group due to calculated dependency
-    inOrder.verify(userRepository).create(alice);
-    inOrder.verify(groupRepository).create(tourGuides);
+    inOrder.verify(userRepository).create(alice, Collections.emptySet(), Collections.emptySet());
+    inOrder.verify(groupRepository).create(tourGuides, Collections.emptySet(), Collections.emptySet());
     inOrder.verifyNoMoreInteractions();
   }
 
@@ -186,7 +186,7 @@ public class BulkResourceImplTest {
     ScimUser userBob = new ScimUser();
     userBob.setId("bob-id");
 
-    when(userRepository.create(any()))
+    when(userRepository.create(any(), any(), any()))
       .thenReturn(userAlice)
       .thenThrow(new UnableToCreateResourceException(Response.Status.BAD_REQUEST, "Expected Test Exception when bob is created"));
 
