@@ -38,7 +38,7 @@ public class Email implements Serializable, TypedAttribute {
 
   private static final long serialVersionUID = -7914234516870440784L;
 
-  @XmlElement(nillable=true)
+  @XmlElement
   @ScimAttribute(canonicalValueList={"work", "home", "other" }, description="A label indicating the attribute's function; e.g., 'work' or 'home'.")
   String type;
   
