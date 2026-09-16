@@ -35,6 +35,8 @@ import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
+
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -48,12 +50,12 @@ import java.util.Map;
 @XmlAccessorType(XmlAccessType.NONE)
 public abstract class ScimResource extends BaseResource<ScimResource> implements Serializable {
 
+  @Serial
   private static final long serialVersionUID = 3673404125396687366L;
 
   private static final Logger LOG = LoggerFactory.getLogger(ScimResource.class);
 
   @XmlElement
-  @NotNull
   @ScimAttribute(returned = Returned.ALWAYS)
   Meta meta;
 
@@ -156,7 +158,7 @@ public abstract class ScimResource extends BaseResource<ScimResource> implements
     return (T) extensions.remove(se.id());
   }
 
-  public @NotNull Meta getMeta() {
+  public Meta getMeta() {
     return this.meta;
   }
 
@@ -193,8 +195,7 @@ public abstract class ScimResource extends BaseResource<ScimResource> implements
 
   public boolean equals(final Object o) {
     if (o == this) return true;
-    if (!(o instanceof ScimResource)) return false;
-    final ScimResource other = (ScimResource) o;
+    if (!(o instanceof ScimResource other)) return false;
     if (!other.canEqual((Object) this)) return false;
     if (!super.equals(o)) return false;
     final Object this$meta = this.getMeta();

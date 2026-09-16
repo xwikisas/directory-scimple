@@ -19,6 +19,7 @@
 
 package org.apache.directory.scim.spec.extension;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -36,6 +37,7 @@ import org.apache.directory.scim.spec.schema.Schema.Attribute.Mutability;
 @ScimExtensionType(required = false, name = "EnterpriseUser", id = EnterpriseExtension.URN, description = "Attributes commonly used in representing users that belong to, or act on behalf of, a business or enterprise.")
 public class EnterpriseExtension implements ScimExtension {
 
+  @Serial
   private static final long serialVersionUID = -6850246976790442980L;
 
   public static final String URN = "urn:ietf:params:scim:schemas:extension:enterprise:2.0:User";
@@ -96,8 +98,7 @@ public class EnterpriseExtension implements ScimExtension {
 
   public boolean equals(final Object o) {
     if (o == this) return true;
-    if (!(o instanceof EnterpriseExtension)) return false;
-    final EnterpriseExtension other = (EnterpriseExtension) o;
+    if (!(o instanceof EnterpriseExtension other)) return false;
     if (!other.canEqual((Object) this)) return false;
     final Object this$employeeNumber = this.getEmployeeNumber();
     final Object other$employeeNumber = other.getEmployeeNumber();
@@ -152,6 +153,7 @@ public class EnterpriseExtension implements ScimExtension {
   @XmlAccessorType(XmlAccessType.NONE)
   public static class Manager implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = -7930518578899296192L;
 
     @ScimAttribute(description = "The \"id\" of the SCIM resource representing the user's manager.  RECOMMENDED.")
@@ -203,8 +205,7 @@ public class EnterpriseExtension implements ScimExtension {
 
     public boolean equals(final Object o) {
       if (o == this) return true;
-      if (!(o instanceof Manager)) return false;
-      final Manager other = (Manager) o;
+      if (!(o instanceof Manager other)) return false;
       if (!other.canEqual((Object) this)) return false;
       final Object this$value = this.getValue();
       final Object other$value = other.getValue();

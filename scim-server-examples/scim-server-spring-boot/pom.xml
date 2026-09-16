@@ -18,14 +18,13 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>com.xwiki.directory.scimple</groupId>
-    <artifactId>scimple</artifactId>
+    <groupId>com.xwiki.directory.scimple.examples</groupId>
+    <artifactId>scim-server-examples</artifactId>
     <version>1.0.0-rc-3-SNAPSHOT</version>
-    <relativePath>../..</relativePath>
   </parent>
 
   <artifactId>scim-server-spring-boot</artifactId>
-  <name>SCIMple - Server - Examples - Spring Boot</name>
+  <name>SCIMple - Server - Examples - Spring Boot 2</name>
 
   <properties>
     <module.name>com.xwiki.directory.scim.example.springboot</module.name>
@@ -80,6 +79,7 @@
       <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
+        <version>${version.spring-boot}</version>
       </plugin>
     </plugins>
   </build>

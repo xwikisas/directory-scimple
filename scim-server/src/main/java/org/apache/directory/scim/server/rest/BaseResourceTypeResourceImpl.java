@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.enterprise.inject.spi.CDI;
 import javax.ws.rs.core.*;
@@ -47,10 +48,11 @@ import org.slf4j.LoggerFactory;
 import org.apache.directory.scim.core.repository.annotations.ScimProcessingExtension;
 import org.apache.directory.scim.core.repository.extensions.AttributeFilterExtension;
 import org.apache.directory.scim.core.repository.extensions.ProcessingExtension;
-import org.apache.directory.scim.spec.filter.attribute.ScimRequestContext;
 import org.apache.directory.scim.core.repository.extensions.ClientFilterException;
 import org.apache.directory.scim.protocol.adapter.FilterWrapper;
 import org.apache.directory.scim.protocol.BaseResourceTypeResource;
+import org.apache.directory.scim.server.configuration.ServerConfiguration;
+import org.apache.directory.scim.spec.filter.PageRequest;
 import org.apache.directory.scim.spec.filter.attribute.AttributeReference;
 import org.apache.directory.scim.spec.filter.attribute.AttributeReferenceListWrapper;
 import org.apache.directory.scim.protocol.data.ListResponse;
@@ -58,9 +60,10 @@ import org.apache.directory.scim.protocol.data.PatchRequest;
 import org.apache.directory.scim.protocol.data.SearchRequest;
 import org.apache.directory.scim.spec.filter.FilterResponse;
 import org.apache.directory.scim.spec.filter.Filter;
-import org.apache.directory.scim.spec.filter.PageRequest;
+import org.apache.directory.scim.spec.schema.ResourceType;
+import org.apache.directory.scim.spec.schema.Schema;
 import org.apache.directory.scim.spec.filter.SortOrder;
-import org.apache.directory.scim.spec.filter.SortRequest;
+import org.apache.directory.scim.core.repository.ScimRequestContext;
 import org.apache.directory.scim.spec.resources.ScimResource;
 
 public abstract class BaseResourceTypeResourceImpl<T extends ScimResource> implements BaseResourceTypeResource<T> {
@@ -69,9 +72,13 @@ public abstract class BaseResourceTypeResourceImpl<T extends ScimResource> imple
 
   private final RepositoryRegistry repositoryRegistry;
 
+  private final SchemaRegistry schemaRegistry;
+
   private final AttributeUtil attributeUtil;
 
   private final Class<T> resourceClass;
+
+  private final ServerConfiguration serverConfiguration;
 
   // TODO: Field injection of UriInfo, Request should work with all implementations
   // CDI can be used directly in Jakarta WS 4
@@ -85,9 +92,23 @@ public abstract class BaseResourceTypeResourceImpl<T extends ScimResource> imple
   HttpHeaders headers;
 
   public BaseResourceTypeResourceImpl(SchemaRegistry schemaRegistry, RepositoryRegistry repositoryRegistry, Class<T> resourceClass) {
+    this(schemaRegistry, repositoryRegistry, resourceClass, new ServerConfiguration());
+  }
+
+  /**
+   * Creates a new instance with an explicit {@link ServerConfiguration}.
+   *
+   * @param schemaRegistry      the schema registry
+   * @param repositoryRegistry  the repository registry
+   * @param resourceClass       the SCIM resource class managed by this endpoint
+   * @param serverConfiguration the server configuration, used to enforce limits
+   */
+  public BaseResourceTypeResourceImpl(SchemaRegistry schemaRegistry, RepositoryRegistry repositoryRegistry, Class<T> resourceClass, ServerConfiguration serverConfiguration) {
+    this.schemaRegistry = schemaRegistry;
     this.repositoryRegistry = repositoryRegistry;
     this.resourceClass = resourceClass;
     this.attributeUtil = new AttributeUtil(schemaRegistry);
+    this.serverConfiguration = serverConfiguration;
   }
 
   public Repository<T> getRepository() {
@@ -111,12 +132,14 @@ public abstract class BaseResourceTypeResourceImpl<T extends ScimResource> imple
     Set<AttributeReference> attributeReferences = AttributeReferenceListWrapper.getAttributeReferences(attributes);
     Set<AttributeReference> excludedAttributeReferences = AttributeReferenceListWrapper.getAttributeReferences(excludedAttributes);
     validateAttributes(attributeReferences, excludedAttributeReferences);
+    attributeReferences = qualifyReferences(attributeReferences);
+    excludedAttributeReferences = qualifyReferences(excludedAttributeReferences);
 
     Repository<T> repository = getRepositoryInternal();
 
     T resource = null;
     try {
-      resource = repository.get(id, attributeReferences, excludedAttributeReferences);
+      resource = repository.get(id, new ScimRequestContext(attributeReferences, excludedAttributeReferences));
     } catch (UnableToRetrieveResourceException e2) {
       Status status = Status.fromStatusCode(e2.getStatus());
       if (status.getFamily().equals(Family.SERVER_ERROR)) {
@@ -174,8 +197,10 @@ public abstract class BaseResourceTypeResourceImpl<T extends ScimResource> imple
     Set<AttributeReference> attributeReferences = AttributeReferenceListWrapper.getAttributeReferences(attributes);
     Set<AttributeReference> excludedAttributeReferences = AttributeReferenceListWrapper.getAttributeReferences(excludedAttributes);
     validateAttributes(attributeReferences, excludedAttributeReferences);
+    attributeReferences = qualifyReferences(attributeReferences);
+    excludedAttributeReferences = qualifyReferences(excludedAttributeReferences);
 
-    T created = repository.create(resource, attributeReferences, excludedAttributeReferences);
+    T created = repository.create(resource, new ScimRequestContext(attributeReferences, excludedAttributeReferences, null, null, null));
 
     EntityTag etag = fromVersion(created);
 
@@ -209,14 +234,16 @@ public abstract class BaseResourceTypeResourceImpl<T extends ScimResource> imple
     Set<AttributeReference> excludedAttributeReferences = Optional.ofNullable(request.getExcludedAttributes())
                                                                   .orElse(Collections.emptySet());
     validateAttributes(attributeReferences, excludedAttributeReferences);
+    attributeReferences = qualifyReferences(attributeReferences);
+    excludedAttributeReferences = qualifyReferences(excludedAttributeReferences);
 
     Filter filter = request.getFilter();
-    PageRequest pageRequest = request.getPageRequest();
-    SortRequest sortRequest = request.getSortRequest();
+    PageRequest pageRequest = clampPageRequest(request.getPageRequest());
+    ScimRequestContext requestContext = new ScimRequestContext(attributeReferences, excludedAttributeReferences, pageRequest, request.getSortRequest(), null);
 
     ListResponse<T> listResponse = new ListResponse<>();
 
-    FilterResponse<T> filterResp = repository.find(filter, pageRequest, sortRequest, attributeReferences, excludedAttributeReferences);
+    FilterResponse<T> filterResp = repository.find(filter, requestContext);
 
     // If no resources are found, we should still return a ListResponse with
     // the totalResults set to 0;
@@ -229,7 +256,7 @@ public abstract class BaseResourceTypeResourceImpl<T extends ScimResource> imple
                                             .size());
       listResponse.setItemsPerPage(filterResp.getResources()
                                              .size());
-      int startIndex = Optional.ofNullable(filterResp.getPageRequest().getStartIndex()).orElse(1);
+      int startIndex = Optional.ofNullable(request.getPageRequest().getStartIndex()).orElse(1);
       listResponse.setStartIndex(startIndex);
       listResponse.setTotalResults(filterResp.getTotalResults());
 
@@ -253,14 +280,13 @@ public abstract class BaseResourceTypeResourceImpl<T extends ScimResource> imple
 
   @Override
   public Response update(T resource, String id, AttributeReferenceListWrapper attributes, AttributeReferenceListWrapper excludedAttributes) throws ScimException, ResourceException {
-    return update(attributes, excludedAttributes, (etags, includeAttributes, excludeAttributes, repository)
-      -> repository.update(id, etags, resource, includeAttributes, excludeAttributes));
+    return update(attributes, excludedAttributes, (requestContext, repository) -> repository.update(id, resource, requestContext));
   }
 
   @Override
   public Response patch(PatchRequest patchRequest, String id, AttributeReferenceListWrapper attributes, AttributeReferenceListWrapper excludedAttributes) throws ScimException, ResourceException {
-    return update(attributes, excludedAttributes, (etags, includeAttributes, excludeAttributes, repository)
-      -> repository.patch(id, etags, patchRequest.getPatchOperationList(), includeAttributes, excludeAttributes));
+    return update(attributes, excludedAttributes, (requestContext, repository)
+      -> repository.patch(id, patchRequest.getPatchOperationList(), requestContext));
   }
 
   @Override
@@ -277,11 +303,14 @@ public abstract class BaseResourceTypeResourceImpl<T extends ScimResource> imple
     Set<AttributeReference> attributeReferences = AttributeReferenceListWrapper.getAttributeReferences(attributes);
     Set<AttributeReference> excludedAttributeReferences = AttributeReferenceListWrapper.getAttributeReferences(excludedAttributes);
     validateAttributes(attributeReferences, excludedAttributeReferences);
+    attributeReferences = qualifyReferences(attributeReferences);
+    excludedAttributeReferences = qualifyReferences(excludedAttributeReferences);
 
     String requestEtag = headers.getHeaderString("If-Match");
     Set<ETag> etags = EtagParser.parseETag(requestEtag);
+    ScimRequestContext requestContext = new ScimRequestContext(attributeReferences, excludedAttributeReferences, null, null, etags);
 
-    T updated = updateFunction.update(etags, attributeReferences, excludedAttributeReferences, repository);
+    T updated = updateFunction.update(requestContext, repository);
 
     // Process Attributes
     updated = processFilterAttributeExtensions(repository, updated, attributeReferences, excludedAttributeReferences);
@@ -302,9 +331,10 @@ public abstract class BaseResourceTypeResourceImpl<T extends ScimResource> imple
       Class<? extends ProcessingExtension>[] value = annotation.value();
       for (Class<? extends ProcessingExtension> class1 : value) {
         ProcessingExtension processingExtension = CDI.current().select(class1).get();
-        if (processingExtension instanceof AttributeFilterExtension) {
-          AttributeFilterExtension attributeFilterExtension = (AttributeFilterExtension) processingExtension;
-          ScimRequestContext scimRequestContext = new ScimRequestContext(attributeReferences, excludedAttributeReferences);
+        if (processingExtension instanceof AttributeFilterExtension attributeFilterExtension) {
+          ScimRequestContext scimRequestContext = new ScimRequestContext()
+            .setIncludedAttributes(attributeReferences)
+            .setExcludedAttributes(excludedAttributeReferences);
 
           try {
             resource = (T) attributeFilterExtension.filterAttributes(resource, scimRequestContext);
@@ -370,8 +400,85 @@ public abstract class BaseResourceTypeResourceImpl<T extends ScimResource> imple
     return null;
   }
 
+  /**
+   * Normalizes {@link AttributeReference} objects to their fully qualified form by
+   * resolving unqualified attribute names against the base schema and extension schemas
+   * for this resource type. References that already have a URN are returned as-is.
+   */
+  private Set<AttributeReference> qualifyReferences(Set<AttributeReference> refs) {
+    if (refs == null || refs.isEmpty()) {
+      return refs;
+    }
+
+    org.apache.directory.scim.spec.annotation.ScimResourceType annotation =
+      resourceClass.getAnnotation(org.apache.directory.scim.spec.annotation.ScimResourceType.class);
+    if (annotation == null) {
+      return refs;
+    }
+
+    ResourceType resourceType = schemaRegistry.getResourceType(annotation.name());
+    if (resourceType == null) {
+      return refs;
+    }
+
+    Schema baseSchema = schemaRegistry.getSchema(resourceType.getSchemaUrn());
+
+    return refs.stream()
+      .map(ref -> {
+        if (ref.isFullyQualified()) {
+          return ref;
+        }
+
+        // Try base schema first
+        if (baseSchema != null && baseSchema.getAttribute(ref.getAttributeName()) != null) {
+          return new AttributeReference(baseSchema.getId(), ref.getFullAttributeName());
+        }
+
+        // Try extension schemas
+        if (resourceType.getSchemaExtensions() != null) {
+          for (ResourceType.SchemaExtensionConfiguration ext : resourceType.getSchemaExtensions()) {
+            Schema extSchema = schemaRegistry.getSchema(ext.getSchemaUrn());
+            if (extSchema != null && extSchema.getAttribute(ref.getAttributeName()) != null) {
+              return new AttributeReference(extSchema.getId(), ref.getFullAttributeName());
+            }
+          }
+        }
+
+        return ref; // best-effort: leave unresolved
+      })
+      .collect(Collectors.toUnmodifiableSet());
+  }
+
+  /**
+   * Returns a {@link PageRequest} whose {@code count} is capped at
+   * {@link ServerConfiguration#getFilterMaxResults()} when that ceiling is
+   * positive (i.e. enabled). A null or negative {@code count} is treated as
+   * "no limit / invalid" and is replaced by the ceiling. A count of 0 is
+   * preserved (RFC 7644: zero means return no resources, only totalResults).
+   * If {@code original} is null it is returned as-is.
+   */
+  private PageRequest clampPageRequest(PageRequest original) {
+    if (original == null) {
+      return null;
+    }
+    int ceiling = serverConfiguration.getFilterMaxResults();
+    if (ceiling <= 0) {
+      return original;
+    }
+    Integer count = original.getCount();
+    if (count != null && count == 0) {
+      return original;
+    }
+    if (count == null || count < 0 || count > ceiling) {
+      return new PageRequest()
+        .setStartIndex(original.getStartIndex())
+        .setCount(ceiling);
+    }
+    return original;
+  }
+
   @FunctionalInterface
   private interface UpdateFunction<T extends ScimResource> {
-    T update(Set<ETag> etags, Set<AttributeReference> includeAttributes, Set<AttributeReference> excludeAttributes, Repository<T> repository) throws ResourceException;
+    T update(ScimRequestContext requestContext, Repository<T> repository) throws ResourceException;
   }
 }

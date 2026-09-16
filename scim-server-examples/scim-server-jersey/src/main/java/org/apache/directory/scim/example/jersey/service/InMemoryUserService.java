@@ -24,44 +24,39 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.ws.rs.core.Response;
-import org.apache.directory.scim.core.repository.ETag;
+import org.apache.directory.scim.core.repository.BaseRepository;
 import org.apache.directory.scim.core.repository.PatchHandler;
-import org.apache.directory.scim.core.repository.Repository;
 import org.apache.directory.scim.core.schema.SchemaRegistry;
 import org.apache.directory.scim.example.jersey.extensions.LuckyNumberExtension;
 import org.apache.directory.scim.server.exception.UnableToCreateResourceException;
+import org.apache.directory.scim.core.repository.ScimRequestContext;
 import org.apache.directory.scim.spec.exception.ResourceException;
 import org.apache.directory.scim.spec.exception.ResourceNotFoundException;
 import org.apache.directory.scim.spec.extension.EnterpriseExtension;
 import org.apache.directory.scim.spec.filter.Filter;
 import org.apache.directory.scim.spec.filter.FilterExpressions;
 import org.apache.directory.scim.spec.filter.FilterResponse;
-import org.apache.directory.scim.spec.filter.PageRequest;
-import org.apache.directory.scim.spec.filter.SortRequest;
-import org.apache.directory.scim.spec.filter.attribute.AttributeReference;
-import org.apache.directory.scim.spec.patch.PatchOperation;
+import org.apache.directory.scim.spec.filter.SortExpressions;
+import org.apache.directory.scim.spec.schema.Schema;
 import org.apache.directory.scim.spec.resources.Email;
 import org.apache.directory.scim.spec.resources.Name;
 import org.apache.directory.scim.spec.resources.ScimExtension;
-import org.apache.directory.scim.spec.resources.ScimResource;
 import org.apache.directory.scim.spec.resources.ScimUser;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 /**
- * Creates a singleton (effectively) Repository<ScimUser> with a memory-based
+ * Creates a singleton (effectively) {@code Repository<ScimUser>} with a memory-based
  * persistence layer.
  *
  * @author Chris Harm &lt;crh5255@psu.edu&gt;
  */
 @Named
 @ApplicationScoped
-public class InMemoryUserService implements Repository<ScimUser> {
+public class InMemoryUserService extends BaseRepository<ScimUser> {
 
   static final String DEFAULT_USER_ID = UUID.randomUUID().toString();
   static final String DEFAULT_USER_EXTERNAL_ID = "e" + DEFAULT_USER_ID;
@@ -74,12 +69,10 @@ public class InMemoryUserService implements Repository<ScimUser> {
 
   private SchemaRegistry schemaRegistry;
 
-  private PatchHandler patchHandler;
-
   @Inject
   public InMemoryUserService(SchemaRegistry schemaRegistry, PatchHandler patchHandler) {
+    super(ScimUser.class, patchHandler);
     this.schemaRegistry = schemaRegistry;
-    this.patchHandler = patchHandler;
   }
 
   protected InMemoryUserService() {}
@@ -117,15 +110,7 @@ public class InMemoryUserService implements Repository<ScimUser> {
   }
 
   @Override
-  public Class<ScimUser> getResourceClass() {
-    return ScimUser.class;
-  }
-
-  /**
-   * @see Repository#create(ScimResource, java.util.Set, java.util.Set)
-   */
-  @Override
-  public ScimUser create(ScimUser resource, Set<AttributeReference> includedAttributes, Set<AttributeReference> excludedAttributes) throws UnableToCreateResourceException {
+  public ScimUser create(ScimUser resource, ScimRequestContext requestContext) throws UnableToCreateResourceException {
     String id = UUID.randomUUID().toString();
 
     // check to make sure the user doesn't already exist
@@ -142,7 +127,7 @@ public class InMemoryUserService implements Repository<ScimUser> {
   }
 
   @Override
-  public ScimUser update(String id, Set<ETag> etags, ScimUser resource, Set<AttributeReference> includedAttributeReferences, Set<AttributeReference> excludedAttributeReferences) throws ResourceException {
+  public ScimUser update(String id, ScimUser resource, ScimRequestContext requestContext) throws ResourceException {
     if (!users.containsKey(id)) {
       throw new ResourceNotFoundException(id);
     }
@@ -151,27 +136,10 @@ public class InMemoryUserService implements Repository<ScimUser> {
   }
 
   @Override
-  public ScimUser patch(String id, Set<ETag> etags, List<PatchOperation> patchOperations, Set<AttributeReference> includedAttributeReferences, Set<AttributeReference> excludedAttributeReferences) throws ResourceException {
-    if (!users.containsKey(id)) {
-      throw new ResourceNotFoundException(id);
-    }
-    ScimUser resource = patchHandler.apply(get(id, includedAttributeReferences, excludedAttributeReferences), patchOperations);
-    users.put(id, resource);
-    return resource;
-  }
-
-
-  /**
-   * @see Repository#get(java.lang.String, java.util.Set, java.util.Set)
-   */
-  @Override
-  public ScimUser get(String id, Set<AttributeReference> includedAttributes, Set<AttributeReference> excludedAttributes) {
+  public ScimUser get(String id, ScimRequestContext requestContext) {
     return users.get(id);
   }
 
-  /**
-   * @see Repository#delete(java.lang.String)
-   */
   @Override
   public void delete(String id) throws ResourceException {
     if (users.remove(id) == null) {
@@ -179,29 +147,15 @@ public class InMemoryUserService implements Repository<ScimUser> {
     }
   }
 
-  /**
-   * @see Repository#find(Filter, PageRequest, SortRequest, java.util.Set, java.util.Set)
-   */
   @Override
-  public FilterResponse<ScimUser> find(Filter filter, PageRequest pageRequest, SortRequest sortRequest, Set<AttributeReference> includedAttributes, Set<AttributeReference> excludedAttributes) {
-
-    long count = pageRequest.getCount() != null ? pageRequest.getCount() : users.size();
-    long startIndex = pageRequest.getStartIndex() != null
-      ? pageRequest.getStartIndex() - 1 // SCIM is 1-based indexed
-      : 0;
-
-    List<ScimUser> result = users.values().stream()
-      .skip(startIndex)
-      .limit(count)
-      .filter(FilterExpressions.inMemory(filter, schemaRegistry.getSchema(ScimUser.SCHEMA_URI)))
-      .collect(Collectors.toList());
-
-    return new FilterResponse<>(result, pageRequest, result.size());
+  public FilterResponse<ScimUser> find(Filter filter, ScimRequestContext requestContext) {
+    Schema schema = schemaRegistry.getSchema(ScimUser.SCHEMA_URI);
+    return users.values().stream()
+      .filter(FilterExpressions.inMemory(filter, schema))
+      .sorted(SortExpressions.comparator(requestContext.getSortRequest(), schema))
+      .collect(FilterResponse.paginate(requestContext.getPageRequestOrDefault()));
   }
 
-  /**
-   * @see Repository#getExtensionList()
-   */
   @Override
   public List<Class<? extends ScimExtension>> getExtensionList() {
     return List.of(LuckyNumberExtension.class, EnterpriseExtension.class);

@@ -22,8 +22,11 @@ package org.apache.directory.scim.server.exception;
 import javax.ws.rs.core.Response.Status;
 import org.apache.directory.scim.spec.exception.ResourceException;
 
+import java.io.Serial;
+
 public class UnableToDeleteResourceException extends ResourceException {
 
+  @Serial
   private static final long serialVersionUID = -3872700870424005641L;
 
   public UnableToDeleteResourceException(Status status, String message) {
@@ -40,8 +43,7 @@ public class UnableToDeleteResourceException extends ResourceException {
 
   public boolean equals(final Object o) {
     if (o == this) return true;
-    if (!(o instanceof UnableToDeleteResourceException)) return false;
-    final UnableToDeleteResourceException other = (UnableToDeleteResourceException) o;
+    if (!(o instanceof UnableToDeleteResourceException other)) return false;
     if (!other.canEqual((Object) this)) return false;
     if (!super.equals(o)) return false;
     return true;

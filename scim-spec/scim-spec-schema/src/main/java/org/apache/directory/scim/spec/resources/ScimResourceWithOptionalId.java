@@ -23,6 +23,8 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 
+import java.io.Serial;
+
 /**
  * This class overrides the required id element in ScimResource for use as a
  * base class for some of the odd SCIM resources.
@@ -31,7 +33,8 @@ import javax.xml.bind.annotation.XmlElement;
  */
 @XmlAccessorType(XmlAccessType.NONE)
 public abstract class ScimResourceWithOptionalId extends ScimResource {
-  
+
+  @Serial
   private static final long serialVersionUID = -379538554565387791L;
 
   @XmlElement
@@ -56,8 +59,7 @@ public abstract class ScimResourceWithOptionalId extends ScimResource {
 
   public boolean equals(final Object o) {
     if (o == this) return true;
-    if (!(o instanceof ScimResourceWithOptionalId)) return false;
-    final ScimResourceWithOptionalId other = (ScimResourceWithOptionalId) o;
+    if (!(o instanceof ScimResourceWithOptionalId other)) return false;
     if (!other.canEqual((Object) this)) return false;
     if (!super.equals(o)) return false;
     final Object this$id = this.getId();

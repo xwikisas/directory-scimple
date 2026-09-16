@@ -18,10 +18,9 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>com.xwiki.directory.scimple</groupId>
-    <artifactId>scimple</artifactId>
+    <groupId>com.xwiki.directory.scimple.examples</groupId>
+    <artifactId>scim-server-examples</artifactId>
     <version>1.0.0-rc-3-SNAPSHOT</version>
-    <relativePath>../..</relativePath>
   </parent>
 
   <artifactId>scim-server-quarkus</artifactId>
@@ -113,6 +112,7 @@
       <groupId>jakarta.annotation</groupId>
       <artifactId>jakarta.annotation-api</artifactId>
       <version>${version.annotationapi}</version> 
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>jakarta.enterprise</groupId>

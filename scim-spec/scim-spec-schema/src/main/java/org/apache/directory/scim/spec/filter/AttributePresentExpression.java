@@ -21,7 +21,10 @@ package org.apache.directory.scim.spec.filter;
 
 import org.apache.directory.scim.spec.filter.attribute.AttributeReference;
 
+import java.io.Serial;
+
 public final class AttributePresentExpression implements FilterExpression, ValueFilterExpression {
+  @Serial
   private static final long serialVersionUID = -4491412651236977273L;
   private final AttributeReference attributePath;
 
@@ -56,8 +59,7 @@ public final class AttributePresentExpression implements FilterExpression, Value
 
   public boolean equals(final Object o) {
     if (o == this) return true;
-    if (!(o instanceof AttributePresentExpression)) return false;
-    final AttributePresentExpression other = (AttributePresentExpression) o;
+    if (!(o instanceof AttributePresentExpression other)) return false;
     final Object this$attributePath = this.getAttributePath();
     final Object other$attributePath = other.getAttributePath();
     if (this$attributePath == null ? other$attributePath != null : !this$attributePath.equals(other$attributePath))

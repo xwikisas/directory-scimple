@@ -22,8 +22,11 @@ package org.apache.directory.scim.server.exception;
 import javax.ws.rs.core.Response.Status;
 import org.apache.directory.scim.spec.exception.ResourceException;
 
+import java.io.Serial;
+
 public class UnableToRetrieveExtensionsResourceException extends ResourceException {
 
+  @Serial
   private static final long serialVersionUID = -3872700870424005641L;
 
   public UnableToRetrieveExtensionsResourceException(Status status, String message) {
@@ -40,8 +43,7 @@ public class UnableToRetrieveExtensionsResourceException extends ResourceExcepti
 
   public boolean equals(final Object o) {
     if (o == this) return true;
-    if (!(o instanceof UnableToRetrieveExtensionsResourceException)) return false;
-    final UnableToRetrieveExtensionsResourceException other = (UnableToRetrieveExtensionsResourceException) o;
+    if (!(o instanceof UnableToRetrieveExtensionsResourceException other)) return false;
     if (!other.canEqual((Object) this)) return false;
     if (!super.equals(o)) return false;
     return true;

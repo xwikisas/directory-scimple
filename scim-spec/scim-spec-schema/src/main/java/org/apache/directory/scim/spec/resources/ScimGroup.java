@@ -19,6 +19,7 @@
 
 package org.apache.directory.scim.spec.resources;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,6 +42,7 @@ import org.apache.directory.scim.spec.schema.Meta;
 @XmlAccessorType(XmlAccessType.NONE)
 public class ScimGroup extends ScimResource implements Serializable {
 
+  @Serial
   private static final long serialVersionUID = 4424638498347469070L;
   public static final String RESOURCE_NAME = "Group";
   public static final String SCHEMA_URI = "urn:ietf:params:scim:schemas:core:2.0:Group";
@@ -125,8 +127,7 @@ public class ScimGroup extends ScimResource implements Serializable {
 
   public boolean equals(final Object o) {
     if (o == this) return true;
-    if (!(o instanceof ScimGroup)) return false;
-    final ScimGroup other = (ScimGroup) o;
+    if (!(o instanceof ScimGroup other)) return false;
     if (!other.canEqual((Object) this)) return false;
     if (!super.equals(o)) return false;
     final Object this$displayName = this.getDisplayName();

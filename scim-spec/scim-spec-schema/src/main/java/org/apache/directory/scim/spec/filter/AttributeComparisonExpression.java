@@ -19,6 +19,7 @@
 
 package org.apache.directory.scim.spec.filter;
 
+import java.io.Serial;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -26,7 +27,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
 import org.apache.directory.scim.spec.filter.attribute.AttributeReference;
+
 public final class AttributeComparisonExpression implements FilterExpression, ValueFilterExpression {
+  @Serial
   private static final long serialVersionUID = -2865840428089850575L;
   private final AttributeReference attributePath;
   private final CompareOperator operation;
@@ -88,14 +91,14 @@ public final class AttributeComparisonExpression implements FilterExpression, Va
 
     if (this.compareValue == null) {
       compareValueString = "null";
-    } else if (this.compareValue instanceof String) {
-      compareValueString = QUOTE + this.compareValue + QUOTE;
-    } else if (this.compareValue instanceof Date) {
-      compareValueString = QUOTE + toDateTimeString((Date) this.compareValue) + QUOTE;
-    } else if (this.compareValue instanceof LocalDate) {
-      compareValueString = QUOTE + toDateString((LocalDate) this.compareValue) + QUOTE;
-    } else if (this.compareValue instanceof LocalDateTime) {
-      compareValueString = QUOTE + toDateTimeString((LocalDateTime) this.compareValue) + QUOTE;
+    } else if (this.compareValue instanceof String s) {
+      compareValueString = QUOTE + s + QUOTE;
+    } else if (this.compareValue instanceof Date date) {
+      compareValueString = QUOTE + toDateTimeString(date) + QUOTE;
+    } else if (this.compareValue instanceof LocalDate localDate) {
+      compareValueString = QUOTE + toDateString(localDate) + QUOTE;
+    } else if (this.compareValue instanceof LocalDateTime localDateTime) {
+      compareValueString = QUOTE + toDateTimeString(localDateTime) + QUOTE;
     } else {
       compareValueString = this.compareValue.toString();
     }
@@ -116,8 +119,7 @@ public final class AttributeComparisonExpression implements FilterExpression, Va
 
   public boolean equals(final Object o) {
     if (o == this) return true;
-    if (!(o instanceof AttributeComparisonExpression)) return false;
-    final AttributeComparisonExpression other = (AttributeComparisonExpression) o;
+    if (!(o instanceof AttributeComparisonExpression other)) return false;
     final Object this$attributePath = this.getAttributePath();
     final Object other$attributePath = other.getAttributePath();
     if (this$attributePath == null ? other$attributePath != null : !this$attributePath.equals(other$attributePath))

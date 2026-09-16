@@ -23,8 +23,11 @@ import javax.ws.rs.core.Response.Status;
 
 import org.apache.directory.scim.spec.exception.ResourceException;
 
+import java.io.Serial;
+
 public class UnableToCreateResourceException extends ResourceException {
 
+  @Serial
   private static final long serialVersionUID = -3872700870424005641L;
 
   public UnableToCreateResourceException(Status status, String message) {
@@ -41,8 +44,7 @@ public class UnableToCreateResourceException extends ResourceException {
 
   public boolean equals(final Object o) {
     if (o == this) return true;
-    if (!(o instanceof UnableToCreateResourceException)) return false;
-    final UnableToCreateResourceException other = (UnableToCreateResourceException) o;
+    if (!(o instanceof UnableToCreateResourceException other)) return false;
     if (!other.canEqual((Object) this)) return false;
     if (!super.equals(o)) return false;
     return true;

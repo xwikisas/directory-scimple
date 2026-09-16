@@ -30,10 +30,13 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.apache.directory.scim.protocol.ErrorMessageType;
 import org.apache.directory.scim.spec.resources.BaseResource;
 
+import java.io.Serial;
+
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.NONE)
 public class ErrorResponse extends BaseResource<ErrorResponse> {
 
+  @Serial
   private static final long serialVersionUID = 9045421198080348116L;
 
   public static final String SCHEMA_URI = "urn:ietf:params:scim:api:messages:2.0:Error";
@@ -103,8 +106,7 @@ public class ErrorResponse extends BaseResource<ErrorResponse> {
 
   public boolean equals(final Object o) {
     if (o == this) return true;
-    if (!(o instanceof ErrorResponse)) return false;
-    final ErrorResponse other = (ErrorResponse) o;
+    if (!(o instanceof ErrorResponse other)) return false;
     if (!other.canEqual((Object) this)) return false;
     if (!super.equals(o)) return false;
     final Object this$detail = this.getDetail();

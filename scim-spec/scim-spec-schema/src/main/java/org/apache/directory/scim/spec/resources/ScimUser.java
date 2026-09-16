@@ -19,6 +19,7 @@
 
 package org.apache.directory.scim.spec.resources;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
@@ -44,6 +45,7 @@ import org.apache.directory.scim.spec.schema.Schema.Attribute.Uniqueness;
 @XmlAccessorType(XmlAccessType.NONE)
 public class ScimUser extends ScimResource implements Serializable {
 
+  @Serial
   private static final long serialVersionUID = -2306547717245071997L;
   public static final String RESOURCE_NAME = "User";
   public static final String SCHEMA_URI = "urn:ietf:params:scim:schemas:core:2.0:User";
@@ -392,8 +394,7 @@ public class ScimUser extends ScimResource implements Serializable {
 
   public boolean equals(final Object o) {
     if (o == this) return true;
-    if (!(o instanceof ScimUser)) return false;
-    final ScimUser other = (ScimUser) o;
+    if (!(o instanceof ScimUser other)) return false;
     if (!other.canEqual((Object) this)) return false;
     if (!super.equals(o)) return false;
     final Object this$active = this.getActive();

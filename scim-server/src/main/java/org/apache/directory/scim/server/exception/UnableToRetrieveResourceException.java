@@ -22,8 +22,11 @@ package org.apache.directory.scim.server.exception;
 import javax.ws.rs.core.Response.Status;
 import org.apache.directory.scim.spec.exception.ResourceException;
 
+import java.io.Serial;
+
 public class UnableToRetrieveResourceException extends ResourceException {
 
+  @Serial
   private static final long serialVersionUID = -3872700870424005641L;
 
   public UnableToRetrieveResourceException(Status status, String message) {
@@ -41,8 +44,7 @@ public class UnableToRetrieveResourceException extends ResourceException {
 
   public boolean equals(final Object o) {
     if (o == this) return true;
-    if (!(o instanceof UnableToRetrieveResourceException)) return false;
-    final UnableToRetrieveResourceException other = (UnableToRetrieveResourceException) o;
+    if (!(o instanceof UnableToRetrieveResourceException other)) return false;
     if (!other.canEqual((Object) this)) return false;
     if (!super.equals(o)) return false;
     return true;

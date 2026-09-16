@@ -18,10 +18,9 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>com.xwiki.directory.scimple</groupId>
-    <artifactId>scimple</artifactId>
+    <groupId>com.xwiki.directory.scimple.examples</groupId>
+    <artifactId>scim-server-examples</artifactId>
     <version>1.0.0-rc-3-SNAPSHOT</version>
-    <relativePath>../..</relativePath>
   </parent>
 
   <artifactId>scim-server-jersey</artifactId>
@@ -71,6 +70,7 @@
       <groupId>jakarta.annotation</groupId>
       <artifactId>jakarta.annotation-api</artifactId>
       <version>${version.annotationapi}</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>jakarta.enterprise</groupId>
@@ -107,7 +107,6 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>exec-maven-plugin</artifactId>
-        <version>3.6.2</version>
         <configuration>
           <mainClass>org.apache.directory.scim.example.jersey.JerseyApplication</mainClass>
         </configuration>

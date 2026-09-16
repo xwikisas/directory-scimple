@@ -19,6 +19,7 @@
 
 package org.apache.directory.scim.spec.resources;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -36,6 +37,7 @@ import org.apache.directory.scim.spec.annotation.ScimAttribute;
 @XmlAccessorType(XmlAccessType.NONE)
 public class Address implements Serializable, TypedAttribute {
 
+  @Serial
   private static final long serialVersionUID = 3579689988186914163L;
   
   @XmlElement
@@ -161,8 +163,7 @@ public class Address implements Serializable, TypedAttribute {
 
   public boolean equals(final Object o) {
     if (o == this) return true;
-    if (!(o instanceof Address)) return false;
-    final Address other = (Address) o;
+    if (!(o instanceof Address other)) return false;
     if (!other.canEqual((Object) this)) return false;
     final Object this$type = this.getType();
     final Object other$type = other.getType();

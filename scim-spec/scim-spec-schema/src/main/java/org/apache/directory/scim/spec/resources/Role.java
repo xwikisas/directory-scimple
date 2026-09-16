@@ -19,6 +19,7 @@
 
 package org.apache.directory.scim.spec.resources;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -36,6 +37,7 @@ import org.apache.directory.scim.spec.annotation.ScimAttribute;
 @XmlAccessorType(XmlAccessType.NONE)
 public class Role implements Serializable, TypedAttribute {
 
+  @Serial
   private static final long serialVersionUID = -2781839189814966670L;
 
   @XmlElement
@@ -96,8 +98,7 @@ public class Role implements Serializable, TypedAttribute {
 
   public boolean equals(final Object o) {
     if (o == this) return true;
-    if (!(o instanceof Role)) return false;
-    final Role other = (Role) o;
+    if (!(o instanceof Role other)) return false;
     if (!other.canEqual((Object) this)) return false;
     final Object this$type = this.getType();
     final Object other$type = other.getType();
