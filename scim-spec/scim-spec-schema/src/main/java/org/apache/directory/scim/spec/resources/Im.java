@@ -19,12 +19,13 @@
 
 package org.apache.directory.scim.spec.resources;
 
+import java.io.Serial;
 import java.io.Serializable;
 
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlType;
 
 import org.apache.directory.scim.spec.annotation.ScimAttribute;
 
@@ -36,9 +37,10 @@ import org.apache.directory.scim.spec.annotation.ScimAttribute;
 @XmlAccessorType(XmlAccessType.NONE)
 public class Im implements Serializable, TypedAttribute {
 
+  @Serial
   private static final long serialVersionUID = 6324188935390255346L;
 
-  @XmlElement(nillable=true)
+  @XmlElement
   @ScimAttribute(canonicalValueList={"aim", "qtalk", "icq", "xmpp", "msn", "skype", "qq", "yahoo"}, description="A label indicating the attribute's function; e.g., 'aim', 'gtalk', 'mobile' etc.")
   String type;
   
@@ -96,8 +98,7 @@ public class Im implements Serializable, TypedAttribute {
 
   public boolean equals(final Object o) {
     if (o == this) return true;
-    if (!(o instanceof Im)) return false;
-    final Im other = (Im) o;
+    if (!(o instanceof Im other)) return false;
     if (!other.canEqual((Object) this)) return false;
     final Object this$type = this.getType();
     final Object other$type = other.getType();

@@ -19,14 +19,15 @@
 
 package org.apache.directory.scim.spec.resources;
 
-import java.io.Serializable;
-
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlType;
 
 import org.apache.directory.scim.spec.annotation.ScimAttribute;
+
+import java.io.Serial;
+import java.io.Serializable;
 
 /**
  * Scim core schema, <a href="https://tools.ietf.org/html/rfc7643#section-4.1.2">section 4.1.2</a>
@@ -35,14 +36,15 @@ import org.apache.directory.scim.spec.annotation.ScimAttribute;
 @XmlType
 @XmlAccessorType(XmlAccessType.NONE)
 public class Photo implements Serializable, TypedAttribute {
-  
+
+  @Serial
   private static final long serialVersionUID = 8821620834716156789L;
  
   @XmlElement
   @ScimAttribute(description="URL of a photo of the User.", referenceTypes={"external"})
   String value;
   
-  @XmlElement(nillable=true)
+  @XmlElement
   @ScimAttribute(canonicalValueList={"photo", "thumbnail"}, description="A label indicating the attribute's function; e.g., 'photo' or 'thumbnail'.")
   String type;
   
@@ -96,8 +98,7 @@ public class Photo implements Serializable, TypedAttribute {
 
   public boolean equals(final Object o) {
     if (o == this) return true;
-    if (!(o instanceof Photo)) return false;
-    final Photo other = (Photo) o;
+    if (!(o instanceof Photo other)) return false;
     if (!other.canEqual((Object) this)) return false;
     final Object this$value = this.getValue();
     final Object other$value = other.getValue();

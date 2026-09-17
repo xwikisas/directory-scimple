@@ -18,18 +18,16 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>org.apache.directory.scimple</groupId>
-    <artifactId>scimple</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
-    <relativePath>../..</relativePath>
+    <groupId>com.xwiki.directory.scimple.examples</groupId>
+    <artifactId>scim-server-examples</artifactId>
+    <version>1.0.0-rc-4-SNAPSHOT</version>
   </parent>
 
   <artifactId>scim-server-spring-boot</artifactId>
-  <name>SCIMple - Server - Examples - Spring Boot</name>
+  <name>SCIMple - Server - Examples - Spring Boot 2</name>
 
   <properties>
-    <module.name>org.apache.directory.scim.example.springboot</module.name>
-    <max.jdk.version>17</max.jdk.version>
+    <module.name>com.xwiki.directory.scim.example.springboot</module.name>
   </properties>
 
   <dependencyManagement>
@@ -46,19 +44,19 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.apache.directory.scimple</groupId>
+      <groupId>com.xwiki.directory.scimple</groupId>
       <artifactId>scim-spring-boot-starter</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.apache.directory.scimple</groupId>
+      <groupId>com.xwiki.directory.scimple</groupId>
       <artifactId>scim-server</artifactId>
     </dependency>
+    <!-- Causes NoClassDefFoundError: org/slf4j/impl/StaticLoggerBinder
     <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-classic</artifactId>
       <scope>runtime</scope>
-    </dependency>
-
+    </dependency>-->
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter</artifactId>
@@ -81,6 +79,7 @@
       <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
+        <version>${version.spring-boot}</version>
       </plugin>
     </plugins>
   </build>

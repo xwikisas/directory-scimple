@@ -19,22 +19,24 @@
 
 package org.apache.directory.scim.spec.patch;
 
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlEnum;
-import jakarta.xml.bind.annotation.XmlEnumValue;
-import jakarta.xml.bind.annotation.XmlType;
-import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlEnum;
+import javax.xml.bind.annotation.XmlEnumValue;
+import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.apache.directory.scim.spec.adapter.PatchOperationPathAdapter;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 @XmlType(propOrder={"operation", "path", "value"})
 @XmlAccessorType(XmlAccessType.NONE)
 public class PatchOperation implements Serializable {
 
+  @Serial
   private static final long serialVersionUID = 7748584008639433236L;
 
   public Type getOperation() {
@@ -70,8 +72,7 @@ public class PatchOperation implements Serializable {
 
   public boolean equals(final Object o) {
     if (o == this) return true;
-    if (!(o instanceof PatchOperation)) return false;
-    final PatchOperation other = (PatchOperation) o;
+    if (!(o instanceof PatchOperation other)) return false;
     if (!other.canEqual((Object) this)) return false;
     final Object this$operation = this.getOperation();
     final Object other$operation = other.getOperation();

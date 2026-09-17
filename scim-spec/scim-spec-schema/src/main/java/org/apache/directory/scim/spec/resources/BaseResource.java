@@ -19,14 +19,15 @@
 
 package org.apache.directory.scim.spec.resources;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Set;
 import java.util.TreeSet;
 
-import jakarta.validation.constraints.Size;
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlElement;
+import javax.validation.constraints.Size;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
 
 import org.apache.directory.scim.spec.validator.Urn;
 
@@ -40,6 +41,7 @@ import org.apache.directory.scim.spec.validator.Urn;
 @XmlAccessorType(XmlAccessType.NONE)
 public abstract class BaseResource<SELF extends BaseResource<SELF>> implements Serializable {
 
+  @Serial
   private static final long serialVersionUID = -7603956873008734403L;
 
   @XmlElement(name="schemas")
@@ -78,8 +80,7 @@ public abstract class BaseResource<SELF extends BaseResource<SELF>> implements S
 
   public boolean equals(final Object o) {
     if (o == this) return true;
-    if (!(o instanceof BaseResource)) return false;
-    final BaseResource<?> other = (BaseResource<?>) o;
+    if (!(o instanceof BaseResource other)) return false;
     if (!other.canEqual((Object) this)) return false;
     final Object this$schemas = this.getSchemas();
     final Object other$schemas = other.getSchemas();

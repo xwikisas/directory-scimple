@@ -19,15 +19,15 @@
 
 package org.apache.directory.scim.spec.schema;
 
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
-import jakarta.xml.bind.annotation.*;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
+import javax.xml.bind.annotation.*;
 import org.apache.directory.scim.spec.exception.ScimResourceInvalidException;
-import org.apache.directory.scim.spec.validator.Urn;
+import org.apache.directory.scim.spec.resources.ScimResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.Serial;
 import java.lang.reflect.Field;
 import java.util.*;
 
@@ -41,21 +41,18 @@ import java.util.*;
  */
 @XmlRootElement(name = "schema")
 @XmlAccessorType(XmlAccessType.NONE)
-public class Schema implements AttributeContainer {
+public class Schema extends ScimResource implements AttributeContainer {
 
   private static final Logger LOG = LoggerFactory.getLogger(Schema.class);
+  @Serial
+  private static final long serialVersionUID = 1869782412244161741L;
   
   public static final String RESOURCE_NAME = "Schema";
   public static final String SCHEMA_URI = "urn:ietf:params:scim:schemas:core:2.0:Schema";
-  private static final long serialVersionUID = 1869782412244161741L;
+  public static final Schema SCHEMA = Schemas.schemaFor(Schema.class, SCHEMA_URI, RESOURCE_NAME, "Specifies the schema that describes a SCIM schema");
 
-  public @Urn @NotNull @Size(min = 1, max = 65535) String getId() {
-    return this.id;
-  }
-
-  public Schema setId(@Urn @NotNull @Size(min = 1, max = 65535) String id) {
-    this.id = id;
-    return this;
+  public Schema() {
+    super(SCHEMA_URI, RESOURCE_NAME);
   }
 
   public String getName() {
@@ -96,8 +93,7 @@ public class Schema implements AttributeContainer {
 
   public boolean equals(final Object o) {
     if (o == this) return true;
-    if (!(o instanceof Schema)) return false;
-    final Schema other = (Schema) o;
+    if (!(o instanceof Schema other)) return false;
     if (!other.canEqual((Object) this)) return false;
     final Object this$id = this.getId();
     final Object other$id = other.getId();
@@ -160,6 +156,7 @@ public class Schema implements AttributeContainer {
   @XmlAccessorType(XmlAccessType.NONE)
   public static class Attribute implements AttributeContainer {
 
+    @Serial
     private static final long serialVersionUID = 1683400114899587851L;
 
     String getPath() {
@@ -317,8 +314,7 @@ public class Schema implements AttributeContainer {
 
     public boolean equals(final Object o) {
       if (o == this) return true;
-      if (!(o instanceof Attribute)) return false;
-      final Attribute other = (Attribute) o;
+      if (!(o instanceof Attribute other)) return false;
       if (!other.canEqual((Object) this)) return false;
       final Object this$name = this.getName();
       final Object other$name = other.getName();
@@ -539,12 +535,6 @@ public class Schema implements AttributeContainer {
     }
 
   }
-  
-  @Urn
-  @NotNull
-  @Size(min = 1, max = 65535)
-  @XmlElement
-  String id;
 
   @XmlElement
   String name;
@@ -564,7 +554,7 @@ public class Schema implements AttributeContainer {
 
   @Override
   public String getUrn() {
-    return id;
+    return getBaseUrn();
   }
 
   public Set<Attribute> getAttributes() {
@@ -667,8 +657,7 @@ public class Schema implements AttributeContainer {
 
     public boolean equals(final Object o) {
       if (o == this) return true;
-      if (!(o instanceof FieldAttributeAccessor)) return false;
-      final FieldAttributeAccessor other = (FieldAttributeAccessor) o;
+      if (!(o instanceof FieldAttributeAccessor other)) return false;
       if (!other.canEqual((Object) this)) return false;
       final Object this$field = this.field;
       final Object other$field = other.field;

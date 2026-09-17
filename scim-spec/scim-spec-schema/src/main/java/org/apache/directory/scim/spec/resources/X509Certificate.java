@@ -19,12 +19,13 @@
 
 package org.apache.directory.scim.spec.resources;
 
+import java.io.Serial;
 import java.io.Serializable;
 
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlType;
 
 import org.apache.directory.scim.spec.annotation.ScimAttribute;
 
@@ -35,10 +36,11 @@ import org.apache.directory.scim.spec.annotation.ScimAttribute;
 @XmlType
 @XmlAccessorType(XmlAccessType.NONE)
 public class X509Certificate implements Serializable, TypedAttribute {
-  
+
+  @Serial
   private static final long serialVersionUID = 374273508404129850L;
 
-  @XmlElement(nillable=true)
+  @XmlElement
   @ScimAttribute(description="A label indicating the attribute's function.")
   String type;
   
@@ -92,8 +94,7 @@ public class X509Certificate implements Serializable, TypedAttribute {
 
   public boolean equals(final Object o) {
     if (o == this) return true;
-    if (!(o instanceof X509Certificate)) return false;
-    final X509Certificate other = (X509Certificate) o;
+    if (!(o instanceof X509Certificate other)) return false;
     if (!other.canEqual((Object) this)) return false;
     final Object this$type = this.getType();
     final Object other$type = other.getType();

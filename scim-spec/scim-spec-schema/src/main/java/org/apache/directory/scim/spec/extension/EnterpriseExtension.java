@@ -19,13 +19,14 @@
 
 package org.apache.directory.scim.spec.extension;
 
+import java.io.Serial;
 import java.io.Serializable;
 
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlRootElement;
-import jakarta.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 import org.apache.directory.scim.spec.annotation.ScimAttribute;
 import org.apache.directory.scim.spec.annotation.ScimExtensionType;
 import org.apache.directory.scim.spec.resources.ScimExtension;
@@ -36,6 +37,7 @@ import org.apache.directory.scim.spec.schema.Schema.Attribute.Mutability;
 @ScimExtensionType(required = false, name = "EnterpriseUser", id = EnterpriseExtension.URN, description = "Attributes commonly used in representing users that belong to, or act on behalf of, a business or enterprise.")
 public class EnterpriseExtension implements ScimExtension {
 
+  @Serial
   private static final long serialVersionUID = -6850246976790442980L;
 
   public static final String URN = "urn:ietf:params:scim:schemas:extension:enterprise:2.0:User";
@@ -96,8 +98,7 @@ public class EnterpriseExtension implements ScimExtension {
 
   public boolean equals(final Object o) {
     if (o == this) return true;
-    if (!(o instanceof EnterpriseExtension)) return false;
-    final EnterpriseExtension other = (EnterpriseExtension) o;
+    if (!(o instanceof EnterpriseExtension other)) return false;
     if (!other.canEqual((Object) this)) return false;
     final Object this$employeeNumber = this.getEmployeeNumber();
     final Object other$employeeNumber = other.getEmployeeNumber();
@@ -152,6 +153,7 @@ public class EnterpriseExtension implements ScimExtension {
   @XmlAccessorType(XmlAccessType.NONE)
   public static class Manager implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = -7930518578899296192L;
 
     @ScimAttribute(description = "The \"id\" of the SCIM resource representing the user's manager.  RECOMMENDED.")
@@ -165,6 +167,14 @@ public class EnterpriseExtension implements ScimExtension {
     @ScimAttribute(mutability = Mutability.READ_ONLY, description = "he displayName of the user's manager.  This attribute is OPTIONAL.")
     @XmlElement
     private String displayName;
+
+    public Manager() { }
+
+    // Work around EntraID quirk
+    // https://learn.microsoft.com/en-us/answers/questions/188003/scim-user-provisioning-setup-with-manager-attribut
+    public Manager(String manager) {
+      this.setValue(manager);
+    }
 
     public String getValue() {
       return this.value;
@@ -195,8 +205,7 @@ public class EnterpriseExtension implements ScimExtension {
 
     public boolean equals(final Object o) {
       if (o == this) return true;
-      if (!(o instanceof Manager)) return false;
-      final Manager other = (Manager) o;
+      if (!(o instanceof Manager other)) return false;
       if (!other.canEqual((Object) this)) return false;
       final Object this$value = this.getValue();
       final Object other$value = other.getValue();

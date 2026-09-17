@@ -19,12 +19,15 @@
 
 package org.apache.directory.scim.protocol.exception;
 
-import jakarta.ws.rs.core.Response.Status;
+import javax.ws.rs.core.Response.Status;
 
 import org.apache.directory.scim.protocol.data.ErrorResponse;
 
+import java.io.Serial;
+
 public class ScimException extends Exception {
 
+  @Serial
   private static final long serialVersionUID = 3643485564325176463L;
   private final ErrorResponse error;
   private final Status status;
@@ -58,8 +61,7 @@ public class ScimException extends Exception {
 
   public boolean equals(final Object o) {
     if (o == this) return true;
-    if (!(o instanceof ScimException)) return false;
-    final ScimException other = (ScimException) o;
+    if (!(o instanceof ScimException other)) return false;
     if (!other.canEqual((Object) this)) return false;
     if (!super.equals(o)) return false;
     final Object this$error = this.getError();

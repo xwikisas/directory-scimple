@@ -19,11 +19,14 @@
 
 package org.apache.directory.scim.server.exception;
 
-import jakarta.ws.rs.core.Response.Status;
+import javax.ws.rs.core.Response.Status;
 import org.apache.directory.scim.spec.exception.ResourceException;
+
+import java.io.Serial;
 
 public class UnableToUpdateResourceException extends ResourceException {
 
+  @Serial
   private static final long serialVersionUID = -3872700870424005641L;
 
   public UnableToUpdateResourceException(Status status, String message) {
@@ -40,8 +43,7 @@ public class UnableToUpdateResourceException extends ResourceException {
 
   public boolean equals(final Object o) {
     if (o == this) return true;
-    if (!(o instanceof UnableToUpdateResourceException)) return false;
-    final UnableToUpdateResourceException other = (UnableToUpdateResourceException) o;
+    if (!(o instanceof UnableToUpdateResourceException other)) return false;
     if (!other.canEqual((Object) this)) return false;
     if (!super.equals(o)) return false;
     return true;

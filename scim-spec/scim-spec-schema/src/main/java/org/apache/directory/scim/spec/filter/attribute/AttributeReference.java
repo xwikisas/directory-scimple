@@ -19,12 +19,14 @@
 
 package org.apache.directory.scim.spec.filter.attribute;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 import org.apache.directory.scim.spec.validator.Urn;
 
 public class AttributeReference implements Serializable {
 
+  @Serial
   private static final long serialVersionUID = -3559538009692681470L;
 
   @Urn
@@ -116,8 +118,26 @@ public class AttributeReference implements Serializable {
     return subAttributeName != null;
   }
 
-  public boolean hasUrn() {
+  /**
+   * Returns {@code true} if this reference includes a schema URN prefix,
+   * making it unambiguous across schemas.
+   *
+   * <p>Extension attributes are always fully qualified since their names
+   * are only meaningful with the schema URN. Core attributes may or may
+   * not be, depending on how the client sent them.</p>
+   *
+   * @return {@code true} if the URN is present
+   */
+  public boolean isFullyQualified() {
     return urn != null;
+  }
+
+  /**
+   * @deprecated Use {@link #isFullyQualified()} instead.
+   */
+  @Deprecated
+  public boolean hasUrn() {
+    return isFullyQualified();
   }
 
   public String toString() {
@@ -153,8 +173,7 @@ public class AttributeReference implements Serializable {
 
   public boolean equals(final Object o) {
     if (o == this) return true;
-    if (!(o instanceof AttributeReference)) return false;
-    final AttributeReference other = (AttributeReference) o;
+    if (!(o instanceof AttributeReference other)) return false;
     if (!other.canEqual((Object) this)) return false;
     final Object this$urn = this.getUrn();
     final Object other$urn = other.getUrn();

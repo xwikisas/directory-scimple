@@ -19,26 +19,29 @@
 
 package org.apache.directory.scim.protocol.data;
 
-import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.core.Response.Status;
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlRootElement;
-import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.apache.directory.scim.protocol.ErrorMessageType;
 import org.apache.directory.scim.spec.resources.BaseResource;
+
+import java.io.Serial;
 
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.NONE)
 public class ErrorResponse extends BaseResource<ErrorResponse> {
 
+  @Serial
   private static final long serialVersionUID = 9045421198080348116L;
 
   public static final String SCHEMA_URI = "urn:ietf:params:scim:api:messages:2.0:Error";
 
-  @XmlElement(nillable = true)
+  @XmlElement
   private String detail;
 
   @XmlElement
@@ -103,8 +106,7 @@ public class ErrorResponse extends BaseResource<ErrorResponse> {
 
   public boolean equals(final Object o) {
     if (o == this) return true;
-    if (!(o instanceof ErrorResponse)) return false;
-    final ErrorResponse other = (ErrorResponse) o;
+    if (!(o instanceof ErrorResponse other)) return false;
     if (!other.canEqual((Object) this)) return false;
     if (!super.equals(o)) return false;
     final Object this$detail = this.getDetail();

@@ -19,18 +19,19 @@
 
 package org.apache.directory.scim.spec.schema;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import jakarta.validation.constraints.NotNull;
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlEnumValue;
-import jakarta.xml.bind.annotation.XmlRootElement;
-import jakarta.xml.bind.annotation.XmlType;
+import javax.validation.constraints.NotNull;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlEnumValue;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 import org.apache.directory.scim.spec.resources.ScimExtension;
 import org.apache.directory.scim.spec.resources.ScimResourceWithOptionalId;
@@ -41,6 +42,8 @@ public class ServiceProviderConfiguration extends ScimResourceWithOptionalId {
 
   public static final String RESOURCE_NAME = "ServiceProviderConfig";
   public static final String SCHEMA_URI = "urn:ietf:params:scim:schemas:core:2.0:ServiceProviderConfig";
+  public static final Schema SCHEMA = Schemas.schemaFor(ServiceProviderConfiguration.class, SCHEMA_URI, "Service Provider Configuration", "Specifies the schema that describes a SCIM schema");
+  @Serial
   private static final long serialVersionUID = -6526116522184446474L;
 
   public String getDocumentationUrl() {
@@ -121,8 +124,7 @@ public class ServiceProviderConfiguration extends ScimResourceWithOptionalId {
 
   public boolean equals(final Object o) {
     if (o == this) return true;
-    if (!(o instanceof ServiceProviderConfiguration)) return false;
-    final ServiceProviderConfiguration other = (ServiceProviderConfiguration) o;
+    if (!(o instanceof ServiceProviderConfiguration other)) return false;
     if (!other.canEqual((Object) this)) return false;
     if (!super.equals(o)) return false;
     final Object this$documentationUrl = this.getDocumentationUrl();
@@ -185,6 +187,7 @@ public class ServiceProviderConfiguration extends ScimResourceWithOptionalId {
   @XmlAccessorType(XmlAccessType.NONE)
   public static class AuthenticationSchema implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1286852277186580002L;
 
     public Type getType() {
@@ -234,8 +237,7 @@ public class ServiceProviderConfiguration extends ScimResourceWithOptionalId {
 
     public boolean equals(final Object o) {
       if (o == this) return true;
-      if (!(o instanceof AuthenticationSchema)) return false;
-      final AuthenticationSchema other = (AuthenticationSchema) o;
+      if (!(o instanceof AuthenticationSchema other)) return false;
       if (!other.canEqual((Object) this)) return false;
       final Object this$type = this.getType();
       final Object other$type = other.getType();
@@ -368,6 +370,7 @@ public class ServiceProviderConfiguration extends ScimResourceWithOptionalId {
   }
 
   public static class SupportedConfiguration implements Serializable {
+    @Serial
     private static final long serialVersionUID = 3646886915978382920L;
     boolean supported;
 
@@ -382,8 +385,7 @@ public class ServiceProviderConfiguration extends ScimResourceWithOptionalId {
 
     public boolean equals(final Object o) {
       if (o == this) return true;
-      if (!(o instanceof SupportedConfiguration)) return false;
-      final SupportedConfiguration other = (SupportedConfiguration) o;
+      if (!(o instanceof SupportedConfiguration other)) return false;
       if (!other.canEqual((Object) this)) return false;
       if (this.isSupported() != other.isSupported()) return false;
       return true;
@@ -406,6 +408,7 @@ public class ServiceProviderConfiguration extends ScimResourceWithOptionalId {
   }
 
   public static class BulkConfiguration extends SupportedConfiguration {
+    @Serial
     private static final long serialVersionUID = 8312025367100671778L;
     int maxOperations;
     int maxPayloadSize;
@@ -434,8 +437,7 @@ public class ServiceProviderConfiguration extends ScimResourceWithOptionalId {
 
     public boolean equals(final Object o) {
       if (o == this) return true;
-      if (!(o instanceof BulkConfiguration)) return false;
-      final BulkConfiguration other = (BulkConfiguration) o;
+      if (!(o instanceof BulkConfiguration other)) return false;
       if (!other.canEqual((Object) this)) return false;
       if (!super.equals(o)) return false;
       if (this.getMaxOperations() != other.getMaxOperations()) return false;
@@ -457,6 +459,7 @@ public class ServiceProviderConfiguration extends ScimResourceWithOptionalId {
   }
 
   public static class FilterConfiguration extends SupportedConfiguration {
+    @Serial
     private static final long serialVersionUID = 1887771731291732875L;
     int maxResults;
 
@@ -475,8 +478,7 @@ public class ServiceProviderConfiguration extends ScimResourceWithOptionalId {
 
     public boolean equals(final Object o) {
       if (o == this) return true;
-      if (!(o instanceof FilterConfiguration)) return false;
-      final FilterConfiguration other = (FilterConfiguration) o;
+      if (!(o instanceof FilterConfiguration other)) return false;
       if (!other.canEqual((Object) this)) return false;
       if (!super.equals(o)) return false;
       if (this.getMaxResults() != other.getMaxResults()) return false;

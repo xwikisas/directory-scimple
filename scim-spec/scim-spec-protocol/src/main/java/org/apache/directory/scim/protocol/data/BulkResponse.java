@@ -21,12 +21,12 @@ package org.apache.directory.scim.protocol.data;
 
 import java.util.List;
 
-import jakarta.ws.rs.core.Response.Status;
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlType;
-import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import javax.ws.rs.core.Response.Status;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.apache.directory.scim.spec.resources.BaseResource;
 
@@ -83,8 +83,7 @@ public class BulkResponse extends BaseResource<BulkResponse> {
 
   public boolean equals(final Object o) {
     if (o == this) return true;
-    if (!(o instanceof BulkResponse)) return false;
-    final BulkResponse other = (BulkResponse) o;
+    if (!(o instanceof BulkResponse other)) return false;
     if (!other.canEqual((Object) this)) return false;
     if (!super.equals(o)) return false;
     final Object this$operations = this.getOperations();

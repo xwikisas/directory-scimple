@@ -19,17 +19,18 @@
 
 package org.apache.directory.scim.test.stub;
 
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlRootElement;
-import jakarta.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 import org.apache.directory.scim.spec.annotation.ScimAttribute;
 import org.apache.directory.scim.spec.annotation.ScimExtensionType;
 import org.apache.directory.scim.spec.resources.ScimExtension;
 import org.apache.directory.scim.spec.schema.Schema.Attribute.Mutability;
 import org.apache.directory.scim.spec.schema.Schema.Attribute.Returned;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
 
@@ -38,6 +39,7 @@ import java.util.List;
 @ScimExtensionType(required = false, name = "ExampleObject", id = ExampleObjectExtension.URN, description = "Example Object Extensions.")
 public class ExampleObjectExtension implements ScimExtension {
 
+  @Serial
   private static final long serialVersionUID = -5398090056271556423L;
 
   public static final String URN = "urn:ietf:params:scim:schemas:extension:example:2.0:Object";
@@ -153,8 +155,7 @@ public class ExampleObjectExtension implements ScimExtension {
 
   public boolean equals(final Object o) {
     if (o == this) return true;
-    if (!(o instanceof ExampleObjectExtension)) return false;
-    final ExampleObjectExtension other = (ExampleObjectExtension) o;
+    if (!(o instanceof ExampleObjectExtension other)) return false;
     if (!other.canEqual((Object) this)) return false;
     final Object this$valueAlways = this.getValueAlways();
     final Object other$valueAlways = other.getValueAlways();
@@ -214,13 +215,16 @@ public class ExampleObjectExtension implements ScimExtension {
   }
 
   public String toString() {
-    return "ExampleObjectExtension(valueAlways=" + this.getValueAlways() + ", valueDefault=" + this.getValueDefault() + ", valueNever=" + this.getValueNever() + ", valueRequest=" + this.getValueRequest() + ", valueComplex=" + this.getValueComplex() + ", list=" + this.getList() + ", enumList=" + this.getEnumList() + ", subobject=" + this.getSubobject() + ")";
+    // valueNever is Returned.NEVER and is omitted here; Returned.NEVER fields should
+    // generally be kept out of toString() to avoid leaking them into logs.
+    return "ExampleObjectExtension(valueAlways=" + this.getValueAlways() + ", valueDefault=" + this.getValueDefault() + ", valueRequest=" + this.getValueRequest() + ", valueComplex=" + this.getValueComplex() + ", list=" + this.getList() + ", enumList=" + this.getEnumList() + ", subobject=" + this.getSubobject() + ")";
   }
 
   @XmlType
   @XmlAccessorType(XmlAccessType.NONE)
   public static class ComplexObject implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 2822581434679824690L;
 
     @ScimAttribute(description = "The \"id\" of the complex object.")
@@ -254,8 +258,7 @@ public class ExampleObjectExtension implements ScimExtension {
 
     public boolean equals(final Object o) {
       if (o == this) return true;
-      if (!(o instanceof ComplexObject)) return false;
-      final ComplexObject other = (ComplexObject) o;
+      if (!(o instanceof ComplexObject other)) return false;
       if (!other.canEqual((Object) this)) return false;
       final Object this$value = this.getValue();
       final Object other$value = other.getValue();

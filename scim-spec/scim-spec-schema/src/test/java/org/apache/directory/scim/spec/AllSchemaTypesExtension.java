@@ -19,10 +19,10 @@
 
 package org.apache.directory.scim.spec;
 
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import org.apache.directory.scim.spec.annotation.ScimAttribute;
 import org.apache.directory.scim.spec.annotation.ScimExtensionType;
 import org.apache.directory.scim.spec.resources.ScimExtension;
@@ -387,8 +387,7 @@ public class AllSchemaTypesExtension implements ScimExtension {
 
   public boolean equals(final Object o) {
     if (o == this) return true;
-    if (!(o instanceof AllSchemaTypesExtension)) return false;
-    final AllSchemaTypesExtension other = (AllSchemaTypesExtension) o;
+    if (!(o instanceof AllSchemaTypesExtension other)) return false;
     if (!other.canEqual((Object) this)) return false;
     final Object this$string1 = this.getString1();
     final Object other$string1 = other.getString1();

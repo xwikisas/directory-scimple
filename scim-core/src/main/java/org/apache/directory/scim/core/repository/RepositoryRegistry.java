@@ -30,6 +30,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.enterprise.inject.Alternative;
+
+@Alternative
 public class RepositoryRegistry {
     /** A logger for this class */
     private static final Logger log = LoggerFactory.getLogger(RepositoryRegistry.class);
@@ -37,6 +40,8 @@ public class RepositoryRegistry {
   private SchemaRegistry schemaRegistry;
 
   private Map<Class<? extends ScimResource>, Repository<? extends ScimResource>> repositoryMap = new HashMap<>();
+
+  private final Object repositoryLock = new Object();
 
   public RepositoryRegistry() {
     // CDI
@@ -58,12 +63,14 @@ public class RepositoryRegistry {
       });
   }
 
-  public synchronized <T extends ScimResource> void registerRepository(Class<T> clazz, Repository<T> repository) throws InvalidRepositoryException {
-    List<Class<? extends ScimExtension>> extensionList = repository.getExtensionList();
+  public <T extends ScimResource> void registerRepository(Class<T> clazz, Repository<T> repository) throws InvalidRepositoryException {
+    synchronized (repositoryLock) {
+      List<Class<? extends ScimExtension>> extensionList = repository.getExtensionList();
 
-    log.debug("Calling addSchema on the base class: {}", clazz);
-    schemaRegistry.addSchema(clazz, extensionList);
-    repositoryMap.put(clazz, repository);
+      log.debug("Calling addSchema on the base class: {}", clazz);
+      schemaRegistry.addSchema(clazz, extensionList);
+      repositoryMap.put(clazz, repository);
+    }
   }
 
   @SuppressWarnings("unchecked")
@@ -91,8 +98,7 @@ public class RepositoryRegistry {
 
   public boolean equals(final Object o) {
     if (o == this) return true;
-    if (!(o instanceof RepositoryRegistry)) return false;
-    final RepositoryRegistry other = (RepositoryRegistry) o;
+    if (!(o instanceof RepositoryRegistry other)) return false;
     if (!other.canEqual((Object) this)) return false;
     final Object this$schemaRegistry = this.getSchemaRegistry();
     final Object other$schemaRegistry = other.getSchemaRegistry();

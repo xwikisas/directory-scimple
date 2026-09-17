@@ -19,13 +19,14 @@
 
 package org.apache.directory.scim.protocol.data;
 
+import java.io.Serial;
 import java.util.Set;
 
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlType;
-import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.apache.directory.scim.protocol.adapter.AttributeReferenceAdapter;
 import org.apache.directory.scim.protocol.adapter.FilterAdapter;
 import org.apache.directory.scim.spec.filter.attribute.AttributeReference;
@@ -46,6 +47,7 @@ import org.apache.directory.scim.spec.resources.BaseResource;
 @XmlAccessorType(XmlAccessType.NONE)
 public class SearchRequest extends BaseResource<SearchRequest> {
 
+  @Serial
   private static final long serialVersionUID = 8217513543318598565L;
 
   public static final String SCHEMA_URI = "urn:ietf:params:scim:api:messages:2.0:SearchRequest";
@@ -162,8 +164,7 @@ public class SearchRequest extends BaseResource<SearchRequest> {
 
   public boolean equals(final Object o) {
     if (o == this) return true;
-    if (!(o instanceof SearchRequest)) return false;
-    final SearchRequest other = (SearchRequest) o;
+    if (!(o instanceof SearchRequest other)) return false;
     if (!other.canEqual((Object) this)) return false;
     if (!super.equals(o)) return false;
     final Object this$attributes = this.getAttributes();

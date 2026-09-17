@@ -21,8 +21,11 @@ package org.apache.directory.scim.spec.filter;
 
 import org.apache.directory.scim.spec.filter.attribute.AttributeReference;
 
-public class ValuePathExpression implements FilterExpression {
+import java.io.Serial;
 
+public final class ValuePathExpression implements FilterExpression {
+
+  @Serial
   private static final long serialVersionUID = 2615135752981305135L;
   // urn:parentAttribute[attributeExpression].subAttribute
 
@@ -123,8 +126,7 @@ public class ValuePathExpression implements FilterExpression {
 
   public boolean equals(final Object o) {
     if (o == this) return true;
-    if (!(o instanceof ValuePathExpression)) return false;
-    final ValuePathExpression other = (ValuePathExpression) o;
+    if (!(o instanceof ValuePathExpression other)) return false;
     if (!other.canEqual((Object) this)) return false;
     final Object this$attributePath = this.getAttributePath();
     final Object other$attributePath = other.getAttributePath();
