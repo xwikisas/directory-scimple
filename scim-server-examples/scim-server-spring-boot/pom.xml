@@ -20,7 +20,7 @@
   <parent>
     <groupId>com.xwiki.directory.scimple.examples</groupId>
     <artifactId>scim-server-examples</artifactId>
-    <version>1.0.0-rc-3-SNAPSHOT</version>
+    <version>1.0.0-rc-3</version>
   </parent>
 
   <artifactId>scim-server-spring-boot</artifactId>
