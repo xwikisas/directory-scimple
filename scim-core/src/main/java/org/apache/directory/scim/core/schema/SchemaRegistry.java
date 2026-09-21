@@ -19,8 +19,11 @@
 
 package org.apache.directory.scim.core.schema;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.*;
+
+import javax.enterprise.inject.Alternative;
 
 import org.apache.directory.scim.spec.annotation.ScimExtensionType;
 import org.apache.directory.scim.spec.annotation.ScimResourceType;
@@ -31,13 +34,16 @@ import org.apache.directory.scim.spec.resources.ScimResource;
 import org.apache.directory.scim.spec.schema.ResourceType;
 import org.apache.directory.scim.spec.schema.Schema;
 import org.apache.directory.scim.spec.schema.Schemas;
+import org.apache.directory.scim.spec.schema.ServiceProviderConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Alternative
 public class SchemaRegistry implements Serializable {
     /** A logger for this class */
     private static final Logger log = LoggerFactory.getLogger(SchemaRegistry.class);
 
+  @Serial
   private static final long serialVersionUID = 2644269305703474835L;
   private final Map<String, Schema> schemaMap = new HashMap<>();
   
@@ -48,6 +54,10 @@ public class SchemaRegistry implements Serializable {
   private final Map<String, ResourceType> resourceTypeMap = new HashMap<>();
 
   private final Map<Class<? extends ScimResource>, Map<String, Class<? extends ScimExtension>>> resourceExtensionsMap = new HashMap<>();
+
+  public SchemaRegistry() {
+    addInternalSchemas();
+  }
 
   public Schema getSchema(String urn) {
     return schemaMap.get(urn);
@@ -71,9 +81,13 @@ public class SchemaRegistry implements Serializable {
     return schemaMap.get(schemaUrn);
   }
 
-  private void addSchema(Schema schema) {
+  private void addSchemaToRegistry(Schema schema) {
     log.debug("Adding schema " + schema.getId() + " into the registry");
     schemaMap.put(schema.getId(), schema);
+  }
+
+  public <T extends ScimResource> void addSchema(Class<T> clazz) {
+    this.addSchema(clazz, List.of());
   }
 
   public <T extends ScimResource> void addSchema(Class<T> clazz, List<Class<? extends ScimExtension>> extensionList) {
@@ -88,7 +102,7 @@ public class SchemaRegistry implements Serializable {
     String schemaUrn = scimResourceType.schema();
     String endpoint = scimResourceType.endpoint();
 
-    addSchema(Schemas.schemaFor(clazz));
+    addSchemaToRegistry(Schemas.schemaFor(clazz));
     addScimResourceSchemaUrn(schemaUrn, clazz);
     addScimResourceEndPoint(endpoint, clazz);
     addResourceType(resourceType);
@@ -96,11 +110,22 @@ public class SchemaRegistry implements Serializable {
     if (extensionList != null) {
       for (Class<? extends ScimExtension> scimExtension : extensionList) {
         log.debug("Calling addSchema on an extension: " + scimExtension);
-        addSchema(Schemas.schemaForExtension(scimExtension));
+        addSchemaToRegistry(Schemas.schemaForExtension(scimExtension));
         log.debug("Registering a extension of type: " + scimExtension);
         addExtension(clazz, scimExtension);
       }
     }
+  }
+
+  private void addInternalSchemas() {
+    addInternalSchema(Schema.class, Schema.SCHEMA);
+    addInternalSchema(ServiceProviderConfiguration.class, ServiceProviderConfiguration.SCHEMA);
+    addInternalSchema(ResourceType.class, ResourceType.SCHEMA);
+  }
+
+  private <T extends ScimResource> void addInternalSchema(Class<T> clazz, Schema schema) {
+    addSchemaToRegistry(schema);
+    addScimResourceSchemaUrn(schema.getUrn(), clazz);
   }
 
   private <T extends ScimResource> void addScimResourceSchemaUrn(String schemaUrn, Class<T> scimResourceClass) {

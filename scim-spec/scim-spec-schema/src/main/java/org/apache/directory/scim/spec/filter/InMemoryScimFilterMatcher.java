@@ -28,7 +28,10 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.Locale;
 import java.util.function.Predicate;
+
+import static org.apache.directory.scim.spec.extension.EnterpriseExtension.Manager;
 
 class InMemoryScimFilterMatcher<R> extends BaseFilterExpressionMapper<Predicate<R>> {
 
@@ -180,18 +183,16 @@ class InMemoryScimFilterMatcher<R> extends BaseFilterExpressionMapper<Predicate<
       CompareOperator op = expression.getOperation();
       Object compareValue = expression.getCompareValue();
 
-      if (op == CompareOperator.EQ) {
+      if (compareValue instanceof String && actualValue instanceof Manager m) {
+        // MS quirk
+        actualValue = m.getValue();
+      }
 
-        if (isStringExpression(attribute, compareValue) && !attribute.isCaseExact()) {
-          return actualValue.toString().equalsIgnoreCase(compareValue.toString());
-        }
-        return compareValue.equals(actualValue);
+      if (op == CompareOperator.EQ) {
+        return eq(attribute, actualValue, compareValue);
       }
       if (op == CompareOperator.NE) {
-        if (isStringExpression(attribute, compareValue) && !attribute.isCaseExact()) {
-          return !actualValue.toString().equalsIgnoreCase(compareValue.toString());
-        }
-        return !compareValue.equals(actualValue);
+        return !eq(attribute, actualValue, compareValue);
       }
       if (op == CompareOperator.SW) {
         return isStringExpression(attribute, compareValue)
@@ -206,13 +207,36 @@ class InMemoryScimFilterMatcher<R> extends BaseFilterExpressionMapper<Predicate<
           && actualValue.toString().contains(compareValue.toString());
       }
 
-      if (actualValue instanceof Comparable) {
-        Comparable actual = (Comparable) actualValue;
+      if (actualValue instanceof Comparable actual) {
         Comparable compare = (Comparable) compareValue;
         return CompareOperatorPredicate.naturalOrder(op, compare).test(actual);
       }
 
       throw new ScimResourceInvalidException("Unsupported operation in filter: " + op.name());
+    }
+
+    private boolean eq(Schema.Attribute attribute, Object actualValue, Object compareValue)
+    {
+      if (isBooleanStringComparison(attribute, compareValue) || (isStringExpression(attribute, compareValue) && !attribute.isCaseExact())) {
+        return actualValue.toString().equalsIgnoreCase(compareValue.toString());
+      }
+      return compareValue.equals(actualValue);
+    }
+
+    private boolean isBooleanStringComparison(Schema.Attribute attribute, Object compareValue)
+    {
+      // Microsoft's SCIM Validator at https://scimvalidator.microsoft.com/ has patch operations
+      // with expressions like [primary EQ "True"]...
+      if (!attribute.getType().equals(Schema.Attribute.Type.BOOLEAN)) {
+        return false;
+      }
+
+      if (compareValue instanceof String compareValueString) {
+        String lowerCaseCompareValueString = compareValueString.toLowerCase(Locale.ROOT);
+        return "true".equals(lowerCaseCompareValueString) || "false".equals(lowerCaseCompareValueString);
+      }
+
+      return false;
     }
   }
 

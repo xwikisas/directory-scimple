@@ -19,17 +19,12 @@
 
 package org.apache.directory.scim.core.repository;
 
-import jakarta.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.directory.scim.spec.exception.ResourceException;
-import org.apache.directory.scim.spec.filter.FilterResponse;
 import org.apache.directory.scim.spec.filter.Filter;
-import org.apache.directory.scim.spec.filter.PageRequest;
-import org.apache.directory.scim.spec.filter.SortRequest;
-import org.apache.directory.scim.spec.filter.attribute.AttributeReference;
+import org.apache.directory.scim.spec.filter.FilterResponse;
 import org.apache.directory.scim.spec.patch.PatchOperation;
 import org.apache.directory.scim.spec.resources.ScimExtension;
 import org.apache.directory.scim.spec.resources.ScimResource;
@@ -55,14 +50,15 @@ public interface Repository<T extends ScimResource> {
    * a POST to a valid end-point.
    * 
    * @param resource The ScimResource to create and persist.
+   * @param requestContext the context object holding additional information about the request.
    * @return The newly created ScimResource.
    * @throws ResourceException When the ScimResource cannot be
    *         created.
    */
-  T create(T resource) throws ResourceException;
-  
+  T create(T resource, ScimRequestContext requestContext) throws ResourceException;
+
   /**
-   * Allows the SCIM server's REST implementation to update and existing
+   * Allows the SCIM server's REST implementation to update an existing
    * resource via a PUT to a valid end-point.
    * <br>
    * <b>SCIM Implementation NOTE:</b> SCIM supports <a href="https://datatracker.ietf.org/doc/html/rfc7644#section-3.14">versioning of resources via HTTP ETags</a>, if the (optional) {@code version} parameter is present, (and supported by the server),
@@ -70,40 +66,37 @@ public interface Repository<T extends ScimResource> {
    *
    *
    * @param id the identifier of the ScimResource to update and persist.
-   * @param etags optional ETag(s) in 'If-Match' header. If not null, to avoid dirty writing, {@code ScimResource.meta.version} must match one of this set (the set should contain only one element).
-   * @param resource an updated resource to persist
-   * @param includedAttributes optional set of attributes to include from ScimResource, may be used to optimize queries.
-   * @param excludedAttributes optional set of attributes to exclude from ScimResource, may be used to optimize queries.
+   * @param resource an updated resource to persist.
+   * @param requestContext the context object holding additional information about the request.
    * @return The newly updated ScimResource.
    * @throws ResourceException When the ScimResource cannot be updated.
    */
-  T update(String id, @Nullable Set<ETag> etags, T resource, Set<AttributeReference> includedAttributes, Set<AttributeReference> excludedAttributes) throws ResourceException;
+  T update(String id, T resource, ScimRequestContext requestContext) throws ResourceException;
 
   /**
-   * Allows the SCIM server's REST implementation to update and existing
+   * Allows the SCIM server's REST implementation to update an existing
    * resource via a PATCH to a valid end-point.
    * <br>
    * <b>SCIM Implementation NOTE:</b> SCIM supports <a href="https://datatracker.ietf.org/doc/html/rfc7644#section-3.14">versioning of resources via HTTP ETags</a>, if the (optional) {@code version} parameter is present, (and supported by the server),
    * it can be used as a mechanism for caching and to ensure clients do not inadvertently overwrite other changes.
    *
    * @param id the identifier of the ScimResource to update and persist.
-   * @param etags optional ETag(s) in 'If-Match' header. If not null, to avoid dirty writing, {@code ScimResource.meta.version} must match one of this set (the set should contain only one element).
    * @param patchOperations a list of patch operations to apply to an existing resource.
-   * @param includedAttributes optional set of attributes to include from ScimResource, may be used to optimize queries.
-   * @param excludedAttributes optional set of attributes to exclude from ScimResource, may be used to optimize queries.
+   * @param requestContext the context object holding additional information about the request.
    * @return The newly updated ScimResource.
    * @throws ResourceException When the ScimResource cannot be updated.
    */
-  T patch(String id, @Nullable Set<ETag> etags, List<PatchOperation> patchOperations, Set<AttributeReference> includedAttributes, Set<AttributeReference> excludedAttributes) throws ResourceException;
+  T patch(String id, List<PatchOperation> patchOperations, ScimRequestContext requestContext) throws ResourceException;
 
   /**
    * Retrieves the ScimResource associated with the provided identifier.
    * @param id The identifier of the target ScimResource.
+   * @param requestContext the context object holding additional information about the request.
    * @return The requested ScimResource.
    * @throws ResourceException When the ScimResource cannot be
    *         retrieved.
    */
-  T get(String id) throws ResourceException;
+  T get(String id, ScimRequestContext requestContext) throws ResourceException;
   
   /**
    * Finds and retrieves all ScimResource objects known to the persistence
@@ -111,21 +104,24 @@ public interface Repository<T extends ScimResource> {
    * may be truncated by the scope specified by the passed PageRequest and
    * the order of the returned resources may be controlled by the passed
    * SortRequest.
-   * 
+   *
+   * <p><b>Sorting:</b> If the request context contains a {@link org.apache.directory.scim.spec.filter.SortRequest},
+   * the repository is responsible for applying it if the backend supports server-side
+   * sorting. The SCIM server layer does NOT apply post-retrieval sorting as a fallback.
+   * If the requested sort attribute is not supported, the repository should silently ignore
+   * the sort request and return results in the backend's natural order, per
+   * <a href="https://datatracker.ietf.org/doc/html/rfc7644#section-3.4.2.3">RFC 7644 §3.4.2.3</a>.</p>
+   *
    * @param filter The filter that determines the ScimResources that will be
-   *        part of the ResultList
-   * @param pageRequest For paged requests, this object specifies the start
-   *        index and number of ScimResources that should be returned.
-   * @param sortRequest Specifies which fields the returned ScimResources
-   *        should be sorted by and whether the sort order is ascending or
-   *        descending.
+   *        part of the ResultList.
+   * @param requestContext the context object holding additional information about the request.
    * @return A list of the ScimResources that pass the filter criteria,
    *         truncated to match the requested "page" and sorted according
    *         to the provided requirements.
    * @throws ResourceException If one or more ScimResources
    *         cannot be retrieved.
    */
-  FilterResponse<T> find(Filter filter, PageRequest pageRequest, SortRequest sortRequest) throws ResourceException;
+  FilterResponse<T> find(Filter filter, ScimRequestContext requestContext) throws ResourceException;
   
   /**
    * Deletes the ScimResource with the provided identifier (if it exists).

@@ -19,10 +19,10 @@
 
 package org.apache.directory.scim.spec;
 
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import org.apache.directory.scim.spec.annotation.ScimAttribute;
 import org.apache.directory.scim.spec.annotation.ScimExtensionType;
 import org.apache.directory.scim.spec.resources.ScimExtension;
@@ -67,8 +67,7 @@ public class LuckyNumberExtension implements ScimExtension {
 
   public boolean equals(final Object o) {
     if (o == this) return true;
-    if (!(o instanceof LuckyNumberExtension)) return false;
-    final LuckyNumberExtension other = (LuckyNumberExtension) o;
+    if (!(o instanceof LuckyNumberExtension other)) return false;
     if (!other.canEqual((Object) this)) return false;
     if (this.getLuckyNumber() != other.getLuckyNumber()) return false;
     return true;

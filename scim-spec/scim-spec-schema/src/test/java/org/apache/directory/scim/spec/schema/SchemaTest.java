@@ -28,16 +28,17 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.Validation;
-import jakarta.validation.Validator;
-import jakarta.validation.ValidatorFactory;
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
 import java.io.InputStream;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class SchemaTest {
 
@@ -87,17 +88,17 @@ public class SchemaTest {
     // representations meet the schema specification.
     if (schema != null) {
       Set<ConstraintViolation<Schema>> schemaViolations = validator.validate(schema);
-      assertTrue(schemaViolations.isEmpty());
+      assertThat(schemaViolations).isEmpty();
 
       for (Attribute attribute : schema.getAttributes()) {
         Set<ConstraintViolation<Attribute>> attributeViolations = validator.validate(attribute);
-        assertTrue(attributeViolations.isEmpty());
+        assertThat(attributeViolations).isEmpty();
       }
 
       Meta meta = schema.getMeta();
       if (meta != null) {
         Set<ConstraintViolation<Meta>> metaViolations = validator.validate(meta);
-        assertTrue(metaViolations.isEmpty());
+        assertThat(metaViolations).isEmpty();
       }
     }
   }

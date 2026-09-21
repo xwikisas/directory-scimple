@@ -19,12 +19,13 @@
 
 package org.apache.directory.scim.spec.resources;
 
+import java.io.Serial;
 import java.io.Serializable;
 
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlType;
 import org.apache.directory.scim.spec.annotation.ScimAttribute;
 
 @XmlType(name = "name", propOrder = {
@@ -38,6 +39,7 @@ import org.apache.directory.scim.spec.annotation.ScimAttribute;
 @XmlAccessorType(XmlAccessType.NONE)
 public class Name implements Serializable  {
 
+  @Serial
   private static final long serialVersionUID = -2761413543859555141L;
 
   @XmlElement
@@ -124,8 +126,7 @@ public class Name implements Serializable  {
 
   public boolean equals(final Object o) {
     if (o == this) return true;
-    if (!(o instanceof Name)) return false;
-    final Name other = (Name) o;
+    if (!(o instanceof Name other)) return false;
     if (!other.canEqual((Object) this)) return false;
     final Object this$familyName = this.getFamilyName();
     final Object other$familyName = other.getFamilyName();

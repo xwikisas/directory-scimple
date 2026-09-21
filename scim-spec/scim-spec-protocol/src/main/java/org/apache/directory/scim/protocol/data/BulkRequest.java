@@ -19,12 +19,13 @@
 
 package org.apache.directory.scim.protocol.data;
 
+import java.io.Serial;
 import java.util.List;
 
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlType;
 
 import org.apache.directory.scim.spec.resources.BaseResource;
 
@@ -34,6 +35,7 @@ public class BulkRequest extends BaseResource<BulkRequest> {
 
   public static final String SCHEMA_URI = "urn:ietf:params:scim:api:messages:2.0:BulkRequest";
 
+  @Serial
   private static final long serialVersionUID = -296570866318702047L;
 
   @XmlElement
@@ -70,8 +72,7 @@ public class BulkRequest extends BaseResource<BulkRequest> {
 
   public boolean equals(final Object o) {
     if (o == this) return true;
-    if (!(o instanceof BulkRequest)) return false;
-    final BulkRequest other = (BulkRequest) o;
+    if (!(o instanceof BulkRequest other)) return false;
     if (!other.canEqual((Object) this)) return false;
     if (!super.equals(o)) return false;
     final Object this$failOnErrors = this.getFailOnErrors();

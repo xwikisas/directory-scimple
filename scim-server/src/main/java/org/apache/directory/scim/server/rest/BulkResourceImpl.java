@@ -22,13 +22,14 @@ package org.apache.directory.scim.server.rest;
 import java.util.*;
 import java.util.regex.Pattern;
 
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
-import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.core.Response.Status;
-import jakarta.ws.rs.core.UriInfo;
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.UriInfo;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.directory.scim.core.repository.ScimRequestContext;
 import org.apache.directory.scim.spec.exception.ResourceException;
 import org.apache.directory.scim.server.exception.UnableToCreateResourceException;
 import org.apache.directory.scim.server.exception.UnableToDeleteResourceException;
@@ -42,6 +43,7 @@ import org.apache.directory.scim.protocol.data.BulkOperation.Method;
 import org.apache.directory.scim.protocol.data.BulkOperation.StatusWrapper;
 import org.apache.directory.scim.protocol.data.BulkRequest;
 import org.apache.directory.scim.protocol.data.BulkResponse;
+import org.apache.directory.scim.protocol.ErrorMessageType;
 import org.apache.directory.scim.protocol.data.ErrorResponse;
 import org.apache.directory.scim.spec.resources.BaseResource;
 import org.apache.directory.scim.spec.resources.ScimResource;
@@ -50,6 +52,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.apache.directory.scim.core.schema.SchemaRegistry;
+import org.apache.directory.scim.server.configuration.ServerConfiguration;
 
 @ApplicationScoped
 public class BulkResourceImpl implements BulkResource {
@@ -95,19 +98,37 @@ public class BulkResourceImpl implements BulkResource {
 
   private final RepositoryRegistry repositoryRegistry;
 
+  private final ServerConfiguration serverConfiguration;
+
   @Inject
-  public BulkResourceImpl(SchemaRegistry schemaRegistry, RepositoryRegistry repositoryRegistry) {
+  public BulkResourceImpl(SchemaRegistry schemaRegistry, RepositoryRegistry repositoryRegistry, ServerConfiguration serverConfiguration) {
     this.schemaRegistry = schemaRegistry;
     this.repositoryRegistry = repositoryRegistry;
+    this.serverConfiguration = serverConfiguration;
   }
 
   public BulkResourceImpl() {
     // CDI
-    this(null, null);
+    this(null, null, null);
+  }
+
+  /** Package-visible constructor for tests that don't need limit enforcement. */
+  BulkResourceImpl(SchemaRegistry schemaRegistry, RepositoryRegistry repositoryRegistry) {
+    this(schemaRegistry, repositoryRegistry, new ServerConfiguration());
   }
 
   @Override
   public Response doBulk(BulkRequest request, UriInfo uriInfo) {
+    int maxOperations = serverConfiguration.getBulkMaxOperations();
+    if (maxOperations > 0 && request.getOperations().size() > maxOperations) {
+      // RFC 7644 §3.7.4: return 413 with scimType "tooMany", stating the maximum.
+      ErrorResponse error = new ErrorResponse(
+        Status.REQUEST_ENTITY_TOO_LARGE,
+        "Bulk request exceeds the maximum allowed number of operations (" + maxOperations + ")");
+      error.setScimType(ErrorMessageType.TOO_MANY);
+      return Response.status(Status.REQUEST_ENTITY_TOO_LARGE).entity(error).build();
+    }
+
     BulkResponse response;
     int errorCount = 0;
     Integer requestFailOnErrors = request.getFailOnErrors();
@@ -153,17 +174,15 @@ public class BulkResourceImpl implements BulkResource {
       // bad/missing input for method
       if (method != null && !(operationRequest.getResponse() instanceof ErrorResponse)) {
         switch (method) {
-        case POST:
-        case PUT: {
+        case POST, PUT -> {
           if (operationRequest.getData() == null) {
             errorOccurred = true;
 
             createAndSetErrorResponse(operationRequest, Status.BAD_REQUEST, "data not provided");
           }
         }
-          break;
 
-        case DELETE: {
+        case DELETE -> {
           String path = operationRequest.getPath();
 
           if (path == null) {
@@ -186,18 +205,15 @@ public class BulkResourceImpl implements BulkResource {
             }
           }
         }
-          break;
 
-        case PATCH: {
+        case PATCH -> {
           errorOccurred = true;
 
           createAndSetErrorResponse(operationRequest, Status.NOT_IMPLEMENTED, "Method not implemented: PATCH");
         }
-          break;
 
-        default: {
+        default -> {
         }
-          break;
         }
       } else if (method == null) {
         errorOccurred = true;
@@ -210,7 +226,7 @@ public class BulkResourceImpl implements BulkResource {
 
         if (bulkIdKey != null) {
           Set<String> reverseDependencies = transitiveReverseDependencies.getOrDefault(bulkIdKey, Collections.emptySet());
-          String detail = String.format(OPERATION_DEPENDS_ON_FAILED_OPERATION, bulkIdKey);
+          String detail = OPERATION_DEPENDS_ON_FAILED_OPERATION.formatted(bulkIdKey);
 
           for (String dependentBulkIdKey : reverseDependencies) {
             BulkOperation dependentOperation = bulkIdKeyToOperationResult.get(dependentBulkIdKey);
@@ -290,7 +306,7 @@ public class BulkResourceImpl implements BulkResource {
         Class<ScimResource> scimResourceClass = (Class<ScimResource>) scimResource.getClass();
         Repository<ScimResource> repository = repositoryRegistry.getRepository(scimResourceClass);
 
-        repository.update(scimResourceId, null, scimResource, Collections.emptySet(), Collections.emptySet());
+        repository.update(scimResourceId, scimResource, ScimRequestContext.empty());
       } catch (UnresolvableOperationException unresolvableOperationException) {
         log.error("Could not complete final resolution pass, unresolvable bulkId", unresolvableOperationException);
 
@@ -369,7 +385,7 @@ public class BulkResourceImpl implements BulkResource {
 
           dependentOperationResult.setData(null);
           dependentOperationResult.setLocation(null);
-          createAndSetErrorResponse(dependentOperationResult, Status.CONFLICT, String.format(OPERATION_DEPENDS_ON_FAILED_OPERATION, bulkId, dependentBulkIdKey));
+          createAndSetErrorResponse(dependentOperationResult, Status.CONFLICT, OPERATION_DEPENDS_ON_FAILED_OPERATION.formatted(bulkId, dependentBulkIdKey));
           dependentResourceRepository.delete(dependentResourceId);
         } catch (ResourceException unableToDeleteResourceException) {
           log.error("Could not delete depenedent ScimResource after failing to update dependee", unableToDeleteResourceException);
@@ -410,14 +426,14 @@ public class BulkResourceImpl implements BulkResource {
     Repository<ScimResource> repository = repositoryRegistry.getRepository(scimResourceClass);
 
     switch (bulkOperationMethod) {
-    case POST: {
+    case POST -> {
       log.debug("POST: {}", scimResource);
 
       this.resolveTopLevel(unresolveds, operationResult, bulkIdKeyToOperationResult);
 
       log.debug("Creating {}", scimResource);
 
-      ScimResource newScimResource = repository.create(scimResource);
+      ScimResource newScimResource = repository.create(scimResource, ScimRequestContext.empty());
       String bulkOperationPath = operationResult.getPath();
       String newResourceId = newScimResource.getId();
       String newResourceUri = uriInfo.getBaseUriBuilder()
@@ -438,9 +454,8 @@ public class BulkResourceImpl implements BulkResource {
       operationResult.setPath(null);
       operationResult.setStatus(StatusWrapper.wrap(Status.CREATED));
     }
-      break;
 
-    case DELETE: {
+    case DELETE -> {
       log.debug("DELETE: {}", operationResult.getPath());
 
       String scimResourceId = operationResult.getPath()
@@ -451,9 +466,8 @@ public class BulkResourceImpl implements BulkResource {
       repository.delete(scimResourceId);
       operationResult.setStatus(StatusWrapper.wrap(Status.NO_CONTENT));
     }
-      break;
 
-    case PUT: {
+    case PUT -> {
       log.debug("PUT: {}", scimResource);
 
       this.resolveTopLevel(unresolveds, operationResult, bulkIdKeyToOperationResult);
@@ -463,22 +477,20 @@ public class BulkResourceImpl implements BulkResource {
                                      + 1);
 
       try {
-        repository.update(id, null, scimResource, Collections.emptySet(), Collections.emptySet());
+        repository.update(id, scimResource, ScimRequestContext.empty());
         operationResult.setStatus(StatusWrapper.wrap(Status.OK));
       } catch (UnableToRetrieveResourceException e) {
         operationResult.setStatus(StatusWrapper.wrap(Status.NOT_FOUND));
       }
     }
-      break;
 
-    default: {
+    default -> {
       BulkOperation.Method method = operationResult.getMethod();
       String detail = "Method not allowed: " + method;
 
       log.error("Received unallowed method: {}", method);
       createAndSetErrorResponse(operationResult, Status.METHOD_NOT_ALLOWED, detail);
     }
-      break;
     }
   }
 
@@ -533,12 +545,12 @@ public class BulkResourceImpl implements BulkResource {
         String resolvedId = resolvedResource.getId();
         this.accessor.set(this.object, resolvedId);
       } else {
-        throw new UnresolvableOperationException(String.format(BULK_ID_REFERS_TO_FAILED_RESOURCE, this.bulkIdKey));
+        throw new UnresolvableOperationException(BULK_ID_REFERS_TO_FAILED_RESOURCE.formatted(this.bulkIdKey));
       }
     }
   }
 
-  private static abstract class UnresolvedTopLevel {
+  private static sealed abstract class UnresolvedTopLevel permits UnresolvedTopLevelBulkId, UnresolvedTopLevelComplex {
     protected final Schema.AttributeAccessor accessor;
 
     public UnresolvedTopLevel(Schema.AttributeAccessor accessor) {
@@ -548,7 +560,7 @@ public class BulkResourceImpl implements BulkResource {
     public abstract void resolve(ScimResource scimResource, Map<String, BulkOperation> bulkIdKeyToOperationResult) throws UnresolvableOperationException;
   }
 
-  private static class UnresolvedTopLevelBulkId extends UnresolvedTopLevel {
+  private static final class UnresolvedTopLevelBulkId extends UnresolvedTopLevel {
     private final String unresolvedBulkIdKey;
 
     public UnresolvedTopLevelBulkId(Schema.AttributeAccessor accessor, String bulkIdKey) {
@@ -572,7 +584,7 @@ public class BulkResourceImpl implements BulkResource {
     }
   }
 
-  private static class UnresolvedTopLevelComplex extends UnresolvedTopLevel {
+  private static final class UnresolvedTopLevelComplex extends UnresolvedTopLevel {
     public final Object complex;
     public final List<UnresolvedComplex> unresolveds;
 
@@ -632,7 +644,7 @@ public class BulkResourceImpl implements BulkResource {
               unresolveds.add(unresolved);
             }
           } else {
-            throw new UnresolvableOperationException(String.format(BULK_ID_DOES_NOT_EXIST, bulkIdKey));
+            throw new UnresolvableOperationException(BULK_ID_DOES_NOT_EXIST.formatted(bulkIdKey));
           }
         }
       } else if (subAttribute.getType() == Schema.Attribute.Type.COMPLEX) {
@@ -698,7 +710,7 @@ public class BulkResourceImpl implements BulkResource {
               unresolvedTopLevels.add(unresolved);
             }
           } else {
-            throw new UnresolvableOperationException(String.format(BULK_ID_DOES_NOT_EXIST, bulkIdKey));
+            throw new UnresolvableOperationException(BULK_ID_DOES_NOT_EXIST.formatted(bulkIdKey));
           }
         }
       } else if (attribute.getType() == Schema.Attribute.Type.COMPLEX) {

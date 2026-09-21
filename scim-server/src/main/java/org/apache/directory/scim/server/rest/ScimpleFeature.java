@@ -19,9 +19,9 @@
 
 package org.apache.directory.scim.server.rest;
 
-import jakarta.ws.rs.core.Feature;
-import jakarta.ws.rs.core.FeatureContext;
-import jakarta.ws.rs.ext.Provider;
+import javax.ws.rs.core.Feature;
+import javax.ws.rs.core.FeatureContext;
+import javax.ws.rs.ext.Provider;
 
 import java.util.Collection;
 import java.util.stream.Stream;
@@ -33,7 +33,7 @@ public class ScimpleFeature implements Feature {
 
   @Override
   public boolean configure(FeatureContext context) {
-    Stream.of(EXCEPTION_MAPPER_CLASSES, MEDIA_TYPE_SUPPORT_CLASSES)
+    Stream.of(EXCEPTION_MAPPER_CLASSES, MEDIA_TYPE_SUPPORT_CLASSES, FEATURE_CLASSES)
       .flatMap(Collection::stream)
       .forEach(context::register);
     return true;

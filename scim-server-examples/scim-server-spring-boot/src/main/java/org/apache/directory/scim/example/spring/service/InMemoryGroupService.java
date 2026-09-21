@@ -19,47 +19,41 @@
 
 package org.apache.directory.scim.example.spring.service;
 
-import jakarta.annotation.PostConstruct;
-import jakarta.ws.rs.core.Response;
-import org.apache.directory.scim.core.repository.ETag;
+import javax.annotation.PostConstruct;
+import javax.ws.rs.core.Response;
+import org.apache.directory.scim.core.repository.BaseRepository;
 import org.apache.directory.scim.core.repository.PatchHandler;
-import org.apache.directory.scim.core.repository.Repository;
 import org.apache.directory.scim.core.schema.SchemaRegistry;
 import org.apache.directory.scim.server.exception.UnableToCreateResourceException;
+import org.apache.directory.scim.core.repository.ScimRequestContext;
 import org.apache.directory.scim.spec.exception.ResourceException;
 import org.apache.directory.scim.spec.exception.ResourceNotFoundException;
 import org.apache.directory.scim.spec.filter.Filter;
 import org.apache.directory.scim.spec.filter.FilterExpressions;
 import org.apache.directory.scim.spec.filter.FilterResponse;
-import org.apache.directory.scim.spec.filter.PageRequest;
-import org.apache.directory.scim.spec.filter.SortRequest;
-import org.apache.directory.scim.spec.filter.attribute.AttributeReference;
-import org.apache.directory.scim.spec.patch.PatchOperation;
+import org.apache.directory.scim.spec.filter.SortExpressions;
+import org.apache.directory.scim.spec.schema.Schema;
 import org.apache.directory.scim.spec.resources.ScimExtension;
 import org.apache.directory.scim.spec.resources.ScimGroup;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
-public class InMemoryGroupService implements Repository<ScimGroup> {
+public class InMemoryGroupService extends BaseRepository<ScimGroup> {
 
-  private final Map<String, ScimGroup> groups = new HashMap<>();
+  private final Map<String, ScimGroup> groups = new ConcurrentHashMap<>();
 
   private final SchemaRegistry schemaRegistry;
 
-  private final PatchHandler patchHandler;
-
   public InMemoryGroupService(SchemaRegistry schemaRegistry, PatchHandler patchHandler) {
+    super(ScimGroup.class, patchHandler);
     this.schemaRegistry = schemaRegistry;
-    this.patchHandler = patchHandler;
   }
 
   @PostConstruct
@@ -72,12 +66,7 @@ public class InMemoryGroupService implements Repository<ScimGroup> {
   }
 
   @Override
-  public Class<ScimGroup> getResourceClass() {
-    return ScimGroup.class;
-  }
-
-  @Override
-  public ScimGroup create(ScimGroup resource) throws UnableToCreateResourceException {
+  public ScimGroup create(ScimGroup resource, ScimRequestContext requestContext) throws UnableToCreateResourceException {
     String id = UUID.randomUUID().toString();
 
     // if the external ID is not set, use the displayName instead
@@ -99,52 +88,33 @@ public class InMemoryGroupService implements Repository<ScimGroup> {
   }
 
   @Override
-  public ScimGroup update(String id, Set<ETag> etags, ScimGroup resource, Set<AttributeReference> includedAttributeReferences, Set<AttributeReference> excludedAttributeReferences) throws ResourceException {
+  public ScimGroup update(String id, ScimGroup resource, ScimRequestContext requestContext) throws ResourceException {
     if (!groups.containsKey(id)) {
       throw new ResourceNotFoundException(id);
     }
-
     groups.put(id, resource);
     return resource;
   }
 
   @Override
-  public ScimGroup patch(String id, Set<ETag> etags, List<PatchOperation> patchOperations, Set<AttributeReference> includedAttributeReferences, Set<AttributeReference> excludedAttributeReferences) throws ResourceException {
-    if (!groups.containsKey(id)) {
-      throw new ResourceNotFoundException(id);
-    }
-
-    ScimGroup resource = patchHandler.apply(get(id), patchOperations);
-    groups.put(id, resource);
-    return resource;
-  }
-
-  @Override
-  public ScimGroup get(String id) {
+  public ScimGroup get(String id, ScimRequestContext requestContext) {
     return groups.get(id);
   }
 
   @Override
-  public void delete(String id) throws ResourceNotFoundException {
+  public void delete(String id) throws ResourceException {
     if (groups.remove(id) == null) {
       throw new ResourceNotFoundException(id);
     }
   }
 
   @Override
-  public FilterResponse<ScimGroup> find(Filter filter, PageRequest pageRequest, SortRequest sortRequest) {
-    long count = pageRequest.getCount() != null ? pageRequest.getCount() : groups.size();
-    long startIndex = pageRequest.getStartIndex() != null
-      ? pageRequest.getStartIndex() - 1 // SCIM is 1-based indexed
-      : 0;
-
-    List<ScimGroup> result = groups.values().stream()
-      .skip(startIndex)
-      .limit(count)
-      .filter(FilterExpressions.inMemory(filter, schemaRegistry.getSchema(ScimGroup.SCHEMA_URI)))
-      .collect(Collectors.toList());
-
-    return new FilterResponse<>(result, pageRequest, result.size());
+  public FilterResponse<ScimGroup> find(Filter filter, ScimRequestContext requestContext) {
+    Schema schema = schemaRegistry.getSchema(ScimGroup.SCHEMA_URI);
+    return groups.values().stream()
+      .filter(FilterExpressions.inMemory(filter, schema))
+      .sorted(SortExpressions.comparator(requestContext.getSortRequest(), schema))
+      .collect(FilterResponse.paginate(requestContext.getPageRequestOrDefault()));
   }
 
   @Override

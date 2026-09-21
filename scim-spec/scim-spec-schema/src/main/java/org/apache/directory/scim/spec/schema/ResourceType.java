@@ -19,16 +19,17 @@
 
 package org.apache.directory.scim.spec.schema;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlElement;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
 
 import org.apache.directory.scim.spec.annotation.ScimResourceType;
 import org.apache.directory.scim.spec.resources.ScimExtension;
@@ -47,6 +48,8 @@ public class ResourceType extends ScimResourceWithOptionalId {
   
   public static final String RESOURCE_NAME = "ResourceType";
   public static final String SCHEMA_URI = "urn:ietf:params:scim:schemas:core:2.0:ResourceType";
+  public static final Schema SCHEMA = Schemas.schemaFor(ResourceType.class, SCHEMA_URI, RESOURCE_NAME, "Specifies the schema that describes a SCIM resource type");
+  @Serial
   private static final long serialVersionUID = -696969911228870476L;
 
   public @Size(min = 1) String getName() {
@@ -100,8 +103,7 @@ public class ResourceType extends ScimResourceWithOptionalId {
 
   public boolean equals(final Object o) {
     if (o == this) return true;
-    if (!(o instanceof ResourceType)) return false;
-    final ResourceType other = (ResourceType) o;
+    if (!(o instanceof ResourceType other)) return false;
     if (!other.canEqual((Object) this)) return false;
     if (!super.equals(o)) return false;
     final Object this$name = this.getName();
@@ -146,6 +148,7 @@ public class ResourceType extends ScimResourceWithOptionalId {
 
   public static class SchemaExtensionConfiguration implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 7351651561572744255L;
 
     @XmlElement(name = "schema")
@@ -176,8 +179,7 @@ public class ResourceType extends ScimResourceWithOptionalId {
 
     public boolean equals(final Object o) {
       if (o == this) return true;
-      if (!(o instanceof SchemaExtensionConfiguration)) return false;
-      final SchemaExtensionConfiguration other = (SchemaExtensionConfiguration) o;
+      if (!(o instanceof SchemaExtensionConfiguration other)) return false;
       if (!other.canEqual((Object) this)) return false;
       final Object this$schemaUrn = this.getSchemaUrn();
       final Object other$schemaUrn = other.getSchemaUrn();

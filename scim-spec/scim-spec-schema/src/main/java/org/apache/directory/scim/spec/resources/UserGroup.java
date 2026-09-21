@@ -19,16 +19,17 @@
 
 package org.apache.directory.scim.spec.resources;
 
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlEnum;
-import jakarta.xml.bind.annotation.XmlEnumValue;
-import jakarta.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlEnum;
+import javax.xml.bind.annotation.XmlEnumValue;
+import javax.xml.bind.annotation.XmlType;
 import org.apache.directory.scim.spec.annotation.ScimAttribute;
 import org.apache.directory.scim.spec.annotation.ScimResourceIdReference;
 import org.apache.directory.scim.spec.schema.Schema;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Locale;
 import java.util.Objects;
@@ -40,6 +41,7 @@ public class UserGroup implements Serializable {
   public static final String TYPE_DIRECT = "direct";
   public static final String TYPE_INDIRECT = "indirect";
 
+  @Serial
   private static final long serialVersionUID = 8698508874413555857L;
 
   public String getValue() {

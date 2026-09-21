@@ -19,9 +19,9 @@
 
 package org.apache.directory.scim.protocol.adapter;
 
-import jakarta.ws.rs.WebApplicationException;
-import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.core.Response.Status;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import org.apache.directory.scim.protocol.ErrorMessageType;
 import org.apache.directory.scim.protocol.data.ErrorResponse;
@@ -60,8 +60,7 @@ final public class FilterWrapper {
 
   public boolean equals(final Object o) {
     if (o == this) return true;
-    if (!(o instanceof FilterWrapper)) return false;
-    final FilterWrapper other = (FilterWrapper) o;
+    if (!(o instanceof FilterWrapper other)) return false;
     final Object this$filter = this.getFilter();
     final Object other$filter = other.getFilter();
     if (this$filter == null ? other$filter != null : !this$filter.equals(other$filter)) return false;

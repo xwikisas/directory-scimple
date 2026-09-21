@@ -19,10 +19,10 @@
 
 package org.apache.directory.scim.example.jersey.extensions;
 
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import org.apache.directory.scim.spec.annotation.ScimAttribute;
 import org.apache.directory.scim.spec.annotation.ScimExtensionType;
 import org.apache.directory.scim.spec.resources.ScimExtension;
@@ -31,31 +31,30 @@ import org.apache.directory.scim.spec.schema.Schema;
 /**
  * Allows a User's lucky number to be passed as part of the User's entry via
  * the SCIM protocol.
- * 
+ *
  * @author Chris Harm &lt;crh5255@psu.edu&gt;
  */
 @XmlRootElement( name = "LuckyNumberExtension", namespace = "http://www.psu.edu/schemas/psu-scim" )
 @XmlAccessorType(XmlAccessType.NONE)
 @ScimExtensionType(id = LuckyNumberExtension.SCHEMA_URN, description="Lucky Numbers", name="LuckyNumbers", required=true)
 public class LuckyNumberExtension implements ScimExtension {
-  
+
   public static final String  SCHEMA_URN = "urn:mem:params:scim:schemas:extension:LuckyNumberExtension";
 
   @ScimAttribute(returned=Schema.Attribute.Returned.DEFAULT, required=true)
   @XmlElement
   private long luckyNumber;
-  
+
   /**
    * Provides the URN associated with this extension which, as defined by the
    * SCIM specification is the extension's unique identifier.
-   * 
+   *
    * @return The extension's URN.
    */
   @Override
   public String getUrn() {
     return SCHEMA_URN;
   }
-
 
   public long getLuckyNumber() {
     return this.luckyNumber;
@@ -68,8 +67,7 @@ public class LuckyNumberExtension implements ScimExtension {
 
   public boolean equals(final Object o) {
     if (o == this) return true;
-    if (!(o instanceof LuckyNumberExtension)) return false;
-    final LuckyNumberExtension other = (LuckyNumberExtension) o;
+    if (!(o instanceof LuckyNumberExtension other)) return false;
     if (!other.canEqual((Object) this)) return false;
     if (this.getLuckyNumber() != other.getLuckyNumber()) return false;
     return true;

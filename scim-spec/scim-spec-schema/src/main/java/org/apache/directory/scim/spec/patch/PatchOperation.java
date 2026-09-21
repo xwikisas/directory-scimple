@@ -19,23 +19,39 @@
 
 package org.apache.directory.scim.spec.patch;
 
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlEnum;
-import jakarta.xml.bind.annotation.XmlEnumValue;
-import jakarta.xml.bind.annotation.XmlType;
-import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlEnum;
+import javax.xml.bind.annotation.XmlEnumValue;
+import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
+import com.fasterxml.jackson.annotation.JsonSetter;
 
 import org.apache.directory.scim.spec.adapter.PatchOperationPathAdapter;
+import org.apache.directory.scim.spec.filter.FilterParseException;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 @XmlType(propOrder={"operation", "path", "value"})
 @XmlAccessorType(XmlAccessType.NONE)
 public class PatchOperation implements Serializable {
 
+  @Serial
   private static final long serialVersionUID = 7748584008639433236L;
+
+  private static final PatchOperationPath MANAGER_PATH;
+  private static final PatchOperationPath MANAGER_VALUE_PATH;
+  static {
+    try {
+      MANAGER_PATH = PatchOperationPath.fromString("urn:ietf:params:scim:schemas:extension:enterprise:2.0:User:manager");
+      MANAGER_VALUE_PATH = PatchOperationPath.fromString("urn:ietf:params:scim:schemas:extension:enterprise:2.0:User:manager.value");
+    } catch (FilterParseException ignored) {
+      throw new RuntimeException("Manager paths are incorrect", ignored);
+    }
+  }
 
   public Type getOperation() {
     return this.operation;
@@ -50,8 +66,10 @@ public class PatchOperation implements Serializable {
     return this.path;
   }
 
+  @JsonSetter("path")
   public PatchOperation setPath(PatchOperationPath path) {
     this.path = path;
+    workAroundMSManagerQuirk();
     return this;
   }
 
@@ -59,9 +77,17 @@ public class PatchOperation implements Serializable {
     return this.value;
   }
 
+  @JsonSetter("value")
   public PatchOperation setValue(Object value) {
     this.value = value;
+    workAroundMSManagerQuirk();
     return this;
+  }
+
+  private void workAroundMSManagerQuirk() {
+    if (MANAGER_PATH.equals(this.path) && this.value instanceof String) {
+      this.path = MANAGER_VALUE_PATH;
+    }
   }
 
   public String toString() {
@@ -70,8 +96,7 @@ public class PatchOperation implements Serializable {
 
   public boolean equals(final Object o) {
     if (o == this) return true;
-    if (!(o instanceof PatchOperation)) return false;
-    final PatchOperation other = (PatchOperation) o;
+    if (!(o instanceof PatchOperation other)) return false;
     if (!other.canEqual((Object) this)) return false;
     final Object this$operation = this.getOperation();
     final Object other$operation = other.getOperation();

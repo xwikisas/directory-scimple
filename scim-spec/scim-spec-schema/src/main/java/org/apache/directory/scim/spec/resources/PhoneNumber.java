@@ -19,6 +19,7 @@
 
 package org.apache.directory.scim.spec.resources;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.LinkedHashMap;
 import java.util.Locale;
@@ -26,10 +27,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlType;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.BaseErrorListener;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -57,6 +58,7 @@ import org.apache.directory.scim.spec.phonenumber.PhoneNumberParser;
 @XmlAccessorType(XmlAccessType.NONE)
 public class PhoneNumber implements Serializable, TypedAttribute {
 
+  @Serial
   private static final long serialVersionUID = 607319505715224096L;
 
   private static final String VISUAL_SEPARATORS = "[\\(\\)\\-\\.]";
@@ -121,6 +123,7 @@ public class PhoneNumber implements Serializable, TypedAttribute {
       PhoneNumberLexer phoneNumberLexer = new PhoneNumberLexer(new ANTLRInputStream(value));
       PhoneNumberParser p = new PhoneNumberParser(new CommonTokenStream(phoneNumberLexer));
       p.setBuildParseTree(true);
+      p.removeErrorListeners();
       p.addErrorListener(new PhoneNumberErrorListener());
   
       PhoneNumberParseTreeListener tpl = new PhoneNumberParseTreeListener();
@@ -407,7 +410,7 @@ public class PhoneNumber implements Serializable, TypedAttribute {
 
     String getFormattedExtension() {
       if (this.extension != null && !this.extension.isEmpty()) {
-        return String.format(EXTENSTION_PREFIX, this.extension);
+        return EXTENSTION_PREFIX.formatted(this.extension);
       }
 
       return null;
@@ -415,7 +418,7 @@ public class PhoneNumber implements Serializable, TypedAttribute {
 
     String getFormattedSubAddress() {
       if (this.subAddress != null && !this.subAddress.isEmpty()) {
-        return String.format(ISUB_PREFIX, this.subAddress);
+        return ISUB_PREFIX.formatted(this.subAddress);
       }
 
       return null;
@@ -423,7 +426,7 @@ public class PhoneNumber implements Serializable, TypedAttribute {
 
     String getFormattedPhoneContext() {
       if (this.phoneContext != null && !this.phoneContext.isEmpty()) {
-        return String.format(CONTEXT_PREFIX, this.phoneContext);
+        return CONTEXT_PREFIX.formatted(this.phoneContext);
       }
 
       return null;
@@ -433,7 +436,7 @@ public class PhoneNumber implements Serializable, TypedAttribute {
       String paramsFormatted = "";
       if (params != null) {
         paramsFormatted = params.entrySet().stream()
-          .map(entry -> String.format(PARAMS_STRING, entry.getKey(), entry.getValue() != null ? entry.getValue() : ""))
+          .map(entry -> PARAMS_STRING.formatted(entry.getKey(), entry.getValue() != null ? entry.getValue() : ""))
           .collect(Collectors.joining());
       }
 
@@ -441,7 +444,7 @@ public class PhoneNumber implements Serializable, TypedAttribute {
     }
 
     String getFormattedValue() {
-      String valueString = String.format(PREFIX, this.number);
+      String valueString = PREFIX.formatted(this.number);
 
       String fExtension = getFormattedExtension();
       if (fExtension != null) {
@@ -573,8 +576,7 @@ public class PhoneNumber implements Serializable, TypedAttribute {
 
     public boolean equals(final Object o) {
       if (o == this) return true;
-      if (!(o instanceof PhoneNumberBuilder)) return false;
-      final PhoneNumberBuilder other = (PhoneNumberBuilder) o;
+      if (!(o instanceof PhoneNumberBuilder other)) return false;
       if (!other.canEqual((Object) this)) return false;
       final Object this$number = this.getNumber();
       final Object other$number = other.getNumber();

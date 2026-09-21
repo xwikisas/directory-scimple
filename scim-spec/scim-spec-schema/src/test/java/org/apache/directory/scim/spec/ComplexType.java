@@ -19,10 +19,10 @@
 
 package org.apache.directory.scim.spec;
 
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlType;
 import org.apache.directory.scim.spec.annotation.ScimAttribute;
 
 @XmlType(name = "complexType")
@@ -44,8 +44,7 @@ public class ComplexType {
 
   public boolean equals(final Object o) {
     if (o == this) return true;
-    if (!(o instanceof ComplexType)) return false;
-    final ComplexType other = (ComplexType) o;
+    if (!(o instanceof ComplexType other)) return false;
     if (!other.canEqual((Object) this)) return false;
     final Object this$firstAttribute = this.getFirstAttribute();
     final Object other$firstAttribute = other.getFirstAttribute();

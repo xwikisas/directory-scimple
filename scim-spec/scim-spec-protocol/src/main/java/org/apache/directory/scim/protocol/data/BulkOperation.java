@@ -19,23 +19,25 @@
 
 package org.apache.directory.scim.protocol.data;
 
-import jakarta.ws.rs.core.Response.Status;
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlEnumValue;
-import jakarta.xml.bind.annotation.XmlType;
-import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import javax.ws.rs.core.Response.Status;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlEnumValue;
+import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.apache.directory.scim.spec.resources.BaseResource;
 import org.apache.directory.scim.spec.resources.ScimResource;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 @XmlType(propOrder = {"method","path","bulkId","data"})
 @XmlAccessorType(XmlAccessType.NONE)
 public class BulkOperation implements Serializable {
 
+  @Serial
   private static final long serialVersionUID = 6528874816710788132L;
 
   public enum Method {
@@ -48,6 +50,7 @@ public class BulkOperation implements Serializable {
   @XmlAccessorType(XmlAccessType.NONE)
   public static class StatusWrapper implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1544738718748608248L;
 
     public StatusWrapper(Status code) {
@@ -73,8 +76,7 @@ public class BulkOperation implements Serializable {
 
     public boolean equals(final Object o) {
       if (o == this) return true;
-      if (!(o instanceof StatusWrapper)) return false;
-      final StatusWrapper other = (StatusWrapper) o;
+      if (!(o instanceof StatusWrapper other)) return false;
       if (!other.canEqual((Object) this)) return false;
       final Object this$code = this.getCode();
       final Object other$code = other.getCode();
@@ -197,8 +199,7 @@ public class BulkOperation implements Serializable {
 
   public boolean equals(final Object o) {
     if (o == this) return true;
-    if (!(o instanceof BulkOperation)) return false;
-    final BulkOperation other = (BulkOperation) o;
+    if (!(o instanceof BulkOperation other)) return false;
     if (!other.canEqual((Object) this)) return false;
     final Object this$method = this.getMethod();
     final Object other$method = other.getMethod();

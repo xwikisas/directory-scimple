@@ -19,14 +19,14 @@
 
 package org.apache.directory.scim.example.quarkus;
 
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.enterprise.inject.Produces;
-import jakarta.ws.rs.ApplicationPath;
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Produces;
+import javax.ws.rs.ApplicationPath;
 import org.apache.directory.scim.server.configuration.ServerConfiguration;
 
 import java.util.Set;
 
-import jakarta.ws.rs.core.Application;
+import javax.ws.rs.core.Application;
 import org.apache.directory.scim.server.rest.ScimResourceHelper;
 
 import static org.apache.directory.scim.spec.schema.ServiceProviderConfiguration.AuthenticationSchema.oauthBearer;
@@ -43,11 +43,11 @@ public class QuarkusApplication extends Application {
   @Produces
   ServerConfiguration serverConfiguration() {
     return new ServerConfiguration()
-      // Set any unique configuration bits
       .setId("scimple-quarkus-example")
       .setDocumentationUri("https://github.com/apache/directory-scimple")
-      // set the auth scheme too
-     .addAuthenticationSchema(oauthBearer());
+      // Informational only, returned by /ServiceProviderConfig.
+      // This does not enforce authentication. Use oauthBearer() or httpBasic() as appropriate.
+      .addAuthenticationSchema(oauthBearer());
   }
 
 }

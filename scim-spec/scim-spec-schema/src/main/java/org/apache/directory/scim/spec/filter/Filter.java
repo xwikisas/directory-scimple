@@ -19,12 +19,10 @@
 
 package org.apache.directory.scim.spec.filter;
 
-import org.antlr.v4.runtime.*;
-import org.antlr.v4.runtime.tree.ParseTree;
-import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -39,6 +37,7 @@ public class Filter implements Serializable {
     /** A logger for this class */
     private static final Logger log = LoggerFactory.getLogger(Filter.class);
 
+  @Serial
   private static final long serialVersionUID = -363511683199922297L;
 
   private FilterExpression expression;
@@ -68,26 +67,9 @@ public class Filter implements Serializable {
   }
 
   protected FilterExpression parseFilter(String filter) throws FilterParseException {
-    FilterLexer l = new FilterLexer(CharStreams.fromString(filter));
-    FilterParser p = new FilterParser(new CommonTokenStream(l));
-    p.setBuildParseTree(true);
-
-    p.addErrorListener(new BaseErrorListener() {
-      @Override
-      public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol, int line, int charPositionInLine, String msg, RecognitionException e) {
-        throw new IllegalStateException("failed to parse at line " + line + ":" + charPositionInLine + " due to " + msg, e);
-      }
-    });
-
-    try {
-      ParseTree tree = p.filter();
-      ExpressionBuildingListener expListener = new ExpressionBuildingListener();
-      ParseTreeWalker.DEFAULT.walk(expListener, tree);
-      
-      return expListener.getFilterExpression();
-    } catch (IllegalStateException e) {
-      throw new FilterParseException("Failed to parse filter: " + filter, e);
-    }
+    ExpressionBuildingListener expListener = new ExpressionBuildingListener();
+    FilterParsers.parseFilter(filter, expListener);
+    return expListener.getFilterExpression();
   }
   
   @Override
@@ -117,8 +99,7 @@ public class Filter implements Serializable {
 
   public boolean equals(final Object o) {
     if (o == this) return true;
-    if (!(o instanceof Filter)) return false;
-    final Filter other = (Filter) o;
+    if (!(o instanceof Filter other)) return false;
     if (!other.canEqual((Object) this)) return false;
     final Object this$expression = this.getExpression();
     final Object other$expression = other.getExpression();
